@@ -7,18 +7,13 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.Objects;
 
 public class Main extends Application {
 
-    private static Scene scene;
-
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("dashboard.fxml"));
+        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("dashboard.fxml")));
         primaryStage.setTitle("Dashboard");
         primaryStage.setScene(new Scene(root, 603, 312));
         primaryStage.show();
@@ -31,7 +26,7 @@ public class Main extends Application {
 
     public static void loadHome(String file) throws IOException {
         Stage stage = new Stage();
-        scene = new Scene(loadFXML(file), 603, 312);
+        Scene scene = new Scene(loadFXML(file), 603, 312);
         stage.setTitle("Home");
         stage.setScene(scene);
         stage.sizeToScene();
@@ -45,7 +40,6 @@ public class Main extends Application {
 
     public static void main(String[] args) {
         JDBC.makeConnection();
-
 
         launch(args);
 
