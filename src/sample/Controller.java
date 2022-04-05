@@ -82,4 +82,10 @@ public class Controller {
         String fileName = "home";
         Main.loadHome(fileName);
     }
+
+    @FXML
+    private void switchToAddCustomer() throws IOException {
+        String fileName = "addCustomer";
+        Main.loadAddCustomer(fileName);
+    }
 }
