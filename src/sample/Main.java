@@ -15,7 +15,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("dashboard.fxml")));
         primaryStage.setTitle("Dashboard");
-        primaryStage.setScene(new Scene(root, 603, 312));
+        primaryStage.setScene(new Scene(root, 627, 328));
         primaryStage.show();
     }
 
@@ -39,7 +39,7 @@ public class Main extends Application {
 
     public static void loadAddCustomer(String file) throws IOException {
         Stage stage = new Stage();
-        Scene scene = new Scene(loadFXML(file), 424, 312);
+        Scene scene = new Scene(loadFXML(file), 424, 384);
         stage.setTitle("Add Customer");
         stage.setScene(scene);
         stage.sizeToScene();
