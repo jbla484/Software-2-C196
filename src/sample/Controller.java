@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Locale;
+import java.util.ResourceBundle;
 
 
 public class Controller {
@@ -58,19 +59,18 @@ public class Controller {
 
     @FXML
     public void initialize() {
-        closeButton.setOnMouseClicked(event -> onCloseButtonClick());
 
         Locale locale = Locale.getDefault();
-        lang = locale.getDisplayLanguage();
-        String country = locale.getDisplayCountry();
+        ResourceBundle rb = ResourceBundle.getBundle("Labels", locale);
 
+        closeButton.setOnMouseClicked(event -> onCloseButtonClick());
+
+        String country = locale.getDisplayCountry();
         locationText.setText("Location: " + country);
 
-        //lang = "French";
-
         //Translate English to French on dashboard.
-        if(lang != "English") {
-            dashTitle.setText("Logiciel de planification de James");
+        if(locale.toString().equals("fr_FR")) {
+            dashTitle.setText(rb.getString("home1"));
             dashTitle2.setText("Connexion");
             dashLabel1.setText("Cette application permet à ses utilisateurs de se connecter à leur compte à " +
                     "partir d'une base de données, de déterminer le pays de l'utilisateur et d'afficher un " +
