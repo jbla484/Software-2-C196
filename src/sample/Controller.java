@@ -1,5 +1,9 @@
 package sample;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -9,6 +13,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -26,6 +32,8 @@ public class Controller {
     public TextField userID = new TextField();
     @FXML
     public TextField userPassword = new TextField();
+    @FXML
+    public TextField customerIDText = new TextField();
 
     // Labels
     @FXML
@@ -55,40 +63,98 @@ public class Controller {
     @FXML
     public String userPasswords = "";
     @FXML
-    public String lang = "";
+    public Locale locale;
+    @FXML
+    public static int nextCustomerID = 1;
+
+    //ComboBoxes
+    @FXML
+    public ComboBox countryComboBox = new ComboBox();
+    @FXML
+    public ComboBox fldComboBox = new ComboBox();
 
     @FXML
     public void initialize() {
 
-        Locale locale = Locale.getDefault();
+        //Get locale based on devices location, and create a resource bundle from it.
+        locale = Locale.getDefault();
         ResourceBundle rb = ResourceBundle.getBundle("Labels", locale);
 
+        //Buttons mouse click event handlers.
         closeButton.setOnMouseClicked(event -> onCloseButtonClick());
 
+        //Finds and displays the country the user is in via locale.
         String country = locale.getDisplayCountry();
         locationText.setText("Location: " + country);
 
-        //Translate English to French on dashboard.
-        if(locale.toString().equals("fr_FR")) {
+        //Translates English to French base on Canada locale value.
+        if(locale.toString().equals("fr_CA")) {
             dashTitle.setText(rb.getString("home1"));
-            dashTitle2.setText("Connexion");
-            dashLabel1.setText("Cette application permet à ses utilisateurs de se connecter à leur compte à " +
-                    "partir d'une base de données, de déterminer le pays de l'utilisateur et d'afficher un " +
-                    "calendrier de tous les rendez-vous programmés.");
-            dashLabel4.setText("L'application permet également à l'utilisateur d'ajouter, de supprimer et de " +
-                    "mettre à jour les enregistrements et les rendez-vous des clients. Les utilisateurs peuvent " +
-                    "afficher les horaires de rendez-vous d'un mois à l'autre ou d'une semaine à l'autre. " +
-                    "L'application alerte ses utilisateurs lorsqu'il y a un rendez-vous dans les 15 minutes " +
-                    "suivant la connexion de l'utilisateur.");
+            dashTitle2.setText(rb.getString("home2"));
+            dashLabel1.setText(rb.getString("home3"));
+            dashLabel4.setText(rb.getString("home4"));
             dashLabel2.setText("");
-            dashLabel3.setText("Si vous avez des questions ou des préoccupations, n'hésitez pas à me contacter à " +
-                    "Jbla484@wgu.edu.");
-            dashUsername.setText("Nom d'utilisateur:");
-            dashPassword.setText("Mot de passe:");
-            locationText.setText("Lieu: " + country);
-            closeButton.setText("Fermer");
-            loginButton.setText("Connexion");
+            dashLabel3.setText(rb.getString("home5"));
+            dashUsername.setText(rb.getString("home6"));
+            dashPassword.setText(rb.getString("home7"));
+            locationText.setText(rb.getString("home8") + country);
+            closeButton.setText(rb.getString("home9"));
+            loginButton.setText(rb.getString("home2"));
         }
+        customerIDText.setText("" + nextCustomerID);
+
+        //Populate ComboBox
+        ObservableList<String> comboBoxValues = FXCollections.observableArrayList();
+        comboBoxValues.add("Canada");
+        comboBoxValues.add("England");
+        comboBoxValues.add("United States");
+        countryComboBox.setItems(comboBoxValues);
+
+        //Set action event for ComboBox
+        countryComboBox.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+
+                //Clear first-level-division ComboBox when a new item has been clicked from country ComboBox.
+                fldComboBox.getItems().removeAll(fldComboBox.getItems());
+
+                if (countryComboBox.getSelectionModel().getSelectedIndex() == 0) {
+                    //Populating the first-level-division ComboBox with Canada values.
+                }
+                if (countryComboBox.getSelectionModel().getSelectedIndex() == 2) {
+                    //Populating the first-level-division ComboBox with state values.
+                    ObservableList<String> comboBoxValues = FXCollections.observableArrayList();
+                    comboBoxValues.add("Alabama"); comboBoxValues.add("Alaska");
+                    comboBoxValues.add("Arizona"); comboBoxValues.add("Arkansas");
+                    comboBoxValues.add("California"); comboBoxValues.add("Colorado");
+                    comboBoxValues.add("Connecticut"); comboBoxValues.add("Delaware");
+                    comboBoxValues.add("Florida"); comboBoxValues.add("Georgia");
+                    comboBoxValues.add("Hawaii"); comboBoxValues.add("Idaho");
+                    comboBoxValues.add("Illinois"); comboBoxValues.add("Indiana");
+                    comboBoxValues.add("Iowa"); comboBoxValues.add("Kansas");
+                    comboBoxValues.add("Kentucky"); comboBoxValues.add("Louisiana");
+                    comboBoxValues.add("Maine"); comboBoxValues.add("Maryland");
+                    comboBoxValues.add("Massachusetts"); comboBoxValues.add("Michigan");
+                    comboBoxValues.add("Minnesota"); comboBoxValues.add("Mississippi");
+                    comboBoxValues.add("Missouri"); comboBoxValues.add("Montana");
+                    comboBoxValues.add("Nebraska"); comboBoxValues.add("Nevada");
+                    comboBoxValues.add("New Hampshire"); comboBoxValues.add("New Jersey");
+                    comboBoxValues.add("New Mexico"); comboBoxValues.add("New York");
+                    comboBoxValues.add("North Carolina"); comboBoxValues.add("North Dakota");
+                    comboBoxValues.add("Ohio"); comboBoxValues.add("Oklahoma");
+                    comboBoxValues.add("Oregon"); comboBoxValues.add("Pennsylvania");
+                    comboBoxValues.add("Rhode Island"); comboBoxValues.add("South Carolina");
+                    comboBoxValues.add("South Dakota"); comboBoxValues.add("Tennessee");
+                    comboBoxValues.add("Texas"); comboBoxValues.add("Utah");
+                    comboBoxValues.add("Vermont"); comboBoxValues.add("Virginia");
+                    comboBoxValues.add("Washington"); comboBoxValues.add("West Virginia");
+                    comboBoxValues.add("Wisconsin"); comboBoxValues.add("Wyoming");
+
+                    fldComboBox.setItems(comboBoxValues);
+                }
+            }
+        });
     }
 
     @FXML
@@ -105,7 +171,7 @@ public class Controller {
         ResultSet resultset = statement.executeQuery(query);
 
         if (!resultset.next()) {
-            if (lang != "English") {
+            if (locale.toString().equals("fr_CA")) {
                 errorDescription.setText("Nom d'utilisateur ou mot de passe invalide.");
             } else {
                 errorDescription.setText("Invalid username or password.");
@@ -117,6 +183,14 @@ public class Controller {
 
             switchToHome();
             System.out.println("Logged in!");
+        }
+
+        //Find customer ID number for next customer
+        String query2 = "Select Customer_ID FROM customers";
+        ResultSet resultset2 = statement.executeQuery(query2);
+
+        while (resultset2.next()) {
+            nextCustomerID++;
         }
     }
 
