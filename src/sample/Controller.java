@@ -5,7 +5,6 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-
 import java.io.IOException;
 import java.sql.*;
 import java.text.SimpleDateFormat;
@@ -15,7 +14,8 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.ResourceBundle;
-
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Controller {
 
@@ -233,66 +233,83 @@ public class Controller {
     }
 
     @FXML
-    public void handleAddButtonAction() throws SQLException {
+    public void handleAddButtonAction() {
 
-        Stage stage = (Stage) addButton.getScene().getWindow();
+        try {
+            Stage stage = (Stage) addButton.getScene().getWindow();
 
-        //Get input values from TextFields into variables
-        //FIXME FORMAT ADDRESSES TO REQUIREMENT A2
-        customerName = customerNameText.getText();
-        customerAddress = customerAddressText.getText();
-        customerPostalCode = customerPostalCodeText.getText();
-        customerPhoneNumber = customerPhoneNumberText.getText();
+            //FORMAT ADDRESS TEXT, throw exception if not formatted correctly
+            //FIXME ADD DIFFERENT FORMATS FOR THE DIFFERENT COUNTRIES
+            Pattern r = Pattern.compile("\\d{1,5}\\s\\w.\\s(\\b\\w*\\b\\s){1,2}\\w*\\.");
+            Matcher m = r.matcher(customerAddressText.getText());
 
-        int countryIndex = countryComboBox.getSelectionModel().getSelectedIndex();
-        int fldIndex = fldComboBox.getSelectionModel().getSelectedIndex();
-        String customerCountry = comboBoxValues.get(countryIndex);
-        String customerFLD = "";
+            if (m.find( )) {
+                customerAddress = customerAddressText.getText();
+            } else {
+                throw new Exception();
+            }
 
-        if (customerCountry.equals("United States")) {
-            customerFLD = comboBoxValues2.get(fldIndex);
-        }
-        if (customerCountry.equals("England")) {
-            customerFLD = comboBoxValues1.get(fldIndex);
-        }
-        if (customerCountry.equals("Canada")) {
-            customerFLD = comboBoxValues0.get(fldIndex);
-        }
+            //Get input values from TextFields into variables
+            //FIXME FORMAT ADDRESSES TO REQUIREMENT A2
+            customerName = customerNameText.getText();
 
-        //Create a query and execute it.
-        LocalDate localDate = LocalDate.now();
-        LocalTime localTime = LocalTime.now();
-        LocalDateTime localDateTime = LocalDateTime.of(localDate, localTime);
-        localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        Timestamp timestamp = Timestamp.valueOf(localDateTime);
-        String s = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(timestamp);
+            customerPostalCode = customerPostalCodeText.getText();
+            customerPhoneNumber = customerPhoneNumberText.getText();
 
-        String createdBy = "James";
-        String divisionID = "";
+            int countryIndex = countryComboBox.getSelectionModel().getSelectedIndex();
+            int fldIndex = fldComboBox.getSelectionModel().getSelectedIndex();
+            String customerCountry = comboBoxValues.get(countryIndex);
+            String customerFLD = "";
 
-        //Execute a statement to get a division id matching our first-level-division value.
-        String query = "SELECT Division_ID, Division FROM first_level_divisions;";
+            if (customerCountry.equals("United States")) {
+                customerFLD = comboBoxValues2.get(fldIndex);
+            }
+            if (customerCountry.equals("England")) {
+                customerFLD = comboBoxValues1.get(fldIndex);
+            }
+            if (customerCountry.equals("Canada")) {
+                customerFLD = comboBoxValues0.get(fldIndex);
+            }
 
-        Connection connection = JDBC.getConnection();
-        Statement statement = connection.createStatement();
-        try (ResultSet resultset = statement.executeQuery(query)) {
+            //Create a query and execute it.
+            LocalDate localDate = LocalDate.now();
+            LocalTime localTime = LocalTime.now();
+            LocalDateTime localDateTime = LocalDateTime.of(localDate, localTime);
+            localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            Timestamp timestamp = Timestamp.valueOf(localDateTime);
+            String s = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(timestamp);
 
-            while (resultset.next()) {
-                if (customerFLD.equals(resultset.getString(2))) {
-                    divisionID = resultset.getString(1);
+            String createdBy = "James";
+            String divisionID = "";
+
+            //Execute a statement to get a division id matching our first-level-division value.
+            String query = "SELECT Division_ID, Division FROM first_level_divisions;";
+
+            Connection connection = JDBC.getConnection();
+            Statement statement = connection.createStatement();
+            try (ResultSet resultset = statement.executeQuery(query)) {
+
+                while (resultset.next()) {
+                    if (customerFLD.equals(resultset.getString(2))) {
+                        divisionID = resultset.getString(1);
+                    }
                 }
             }
+
+            query = "INSERT INTO customers VALUES ('" + nextCustomerID + "', '" + customerName + "', '" +
+                    customerAddress + "', '" + customerPostalCode + "', '" + customerPhoneNumber + "', '" +
+                    s + "', '" + createdBy + "', '" + timestamp + "', '" + createdBy + "', '" +
+                    divisionID + "');";
+
+            statement.executeUpdate(query);
+
+            //Once done, close
+            stage.close();
+        }
+        catch (Exception e) {
+            System.out.println("Incorrect address format.");
         }
 
-        query = "INSERT INTO customers VALUES ('" + nextCustomerID + "', '" + customerName + "', '" +
-                customerAddress + "', '" + customerPostalCode + "', '" + customerPhoneNumber + "', '" +
-                s + "', '" + createdBy + "', '" + timestamp + "', '" + createdBy + "', '" +
-                divisionID + "');";
-
-        int result = statement.executeUpdate(query);
-
-        //Once done, close
-        stage.close();
     }
 
     @FXML
