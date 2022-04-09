@@ -7,10 +7,8 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -147,7 +145,7 @@ public class Controller {
                 comboBoxValues0.add("Manitoba"); comboBoxValues0.add("New Brunswick");
                 comboBoxValues0.add("Newfoundland and Labrador"); comboBoxValues0.add("Nova Scotia");
                 comboBoxValues0.add("Ontario"); comboBoxValues0.add("Prince Edward Island");
-                comboBoxValues0.add("Quebec"); comboBoxValues0.add("Saskatchewan");
+                comboBoxValues0.add("Québec"); comboBoxValues0.add("Saskatchewan");
 
                 fldComboBox.setItems(comboBoxValues0);
             }
@@ -205,8 +203,8 @@ public class Controller {
 
         String query = "Select * FROM users WHERE User_Name = '" + userIDs + "' AND Password = '" + userPasswords + "';";
 
-        try (Connection connection = JDBC.getConnection();
-        Statement statement = connection.createStatement();
+        Connection connection = JDBC.getConnection();
+        try (Statement statement = connection.createStatement();
         ResultSet resultset = statement.executeQuery(query)) {
 
             if (!resultset.next()) {
@@ -240,14 +238,17 @@ public class Controller {
         Stage stage = (Stage) addButton.getScene().getWindow();
 
         //Get input values from TextFields into variables
+        //FIXME FORMAT ADDRESSES TO REQUIREMENT A2
         customerName = customerNameText.getText();
         customerAddress = customerAddressText.getText();
         customerPostalCode = customerPostalCodeText.getText();
         customerPhoneNumber = customerPhoneNumberText.getText();
+
         int countryIndex = countryComboBox.getSelectionModel().getSelectedIndex();
         int fldIndex = fldComboBox.getSelectionModel().getSelectedIndex();
         String customerCountry = comboBoxValues.get(countryIndex);
         String customerFLD = "";
+
         if (customerCountry.equals("United States")) {
             customerFLD = comboBoxValues2.get(fldIndex);
         }
@@ -259,31 +260,36 @@ public class Controller {
         }
 
         //Create a query and execute it.
-        //FIXME INSERT INTO TABLE BY ITERATING THROUGH OBSERVABLE LIST
         LocalDate localDate = LocalDate.now();
         LocalTime localTime = LocalTime.now();
         LocalDateTime localDateTime = LocalDateTime.of(localDate, localTime);
         localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        Timestamp timestamp = Timestamp.valueOf(localDateTime);
+        String s = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(timestamp);
 
         String createdBy = "James";
         String divisionID = "";
 
         //Execute a statement to get a division id matching our first-level-division value.
-        String query = "SELECT * FROM first_level_divisions;";
+        String query = "SELECT Division_ID, Division FROM first_level_divisions;";
 
-        try (Connection connection = JDBC.getConnection();
-             Statement statement = connection.createStatement();
-             ResultSet resultset = statement.executeQuery(query)) {
+        Connection connection = JDBC.getConnection();
+        Statement statement = connection.createStatement();
+        try (ResultSet resultset = statement.executeQuery(query)) {
 
+            while (resultset.next()) {
+                if (customerFLD.equals(resultset.getString(2))) {
+                    divisionID = resultset.getString(1);
+                }
+            }
         }
 
-        query = "INSERT INTO customers VALUES (" + nextCustomerID + ", " + customerName + ", " +
-                customerAddress + ", " + customerPostalCode + ", " + customerPhoneNumber + ", " +
-                localDateTime + ", " + createdBy + ", " + localDateTime + ", " + createdBy + ", " +
-                divisionID + ");";
+        query = "INSERT INTO customers VALUES ('" + nextCustomerID + "', '" + customerName + "', '" +
+                customerAddress + "', '" + customerPostalCode + "', '" + customerPhoneNumber + "', '" +
+                s + "', '" + createdBy + "', '" + timestamp + "', '" + createdBy + "', '" +
+                divisionID + "');";
 
-
-        System.out.println(query);
+        int result = statement.executeUpdate(query);
 
         //Once done, close
         stage.close();
