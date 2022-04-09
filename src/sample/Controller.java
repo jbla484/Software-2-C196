@@ -121,6 +121,25 @@ public class Controller {
 
                 if (countryComboBox.getSelectionModel().getSelectedIndex() == 0) {
                     //Populating the first-level-division ComboBox with Canada values.
+                    ObservableList<String> comboBoxValues = FXCollections.observableArrayList();
+                    comboBoxValues.add("Alberta"); comboBoxValues.add("British Columbia");
+                    comboBoxValues.add("Manitoba"); comboBoxValues.add("New Brunswick");
+                    comboBoxValues.add("Newfoundland and Labrador"); comboBoxValues.add("Nova Scotia");
+                    comboBoxValues.add("Ontario"); comboBoxValues.add("Prince Edward Island");
+                    comboBoxValues.add("Quebec"); comboBoxValues.add("Saskatchewan");
+
+                    fldComboBox.setItems(comboBoxValues);
+                }
+                if (countryComboBox.getSelectionModel().getSelectedIndex() == 1) {
+                    //Populating the first-level-division ComboBox with England values.
+                    ObservableList<String> comboBoxValues = FXCollections.observableArrayList();
+                    comboBoxValues.add("London"); comboBoxValues.add("North East");
+                    comboBoxValues.add("North West"); comboBoxValues.add("Yorkshire");
+                    comboBoxValues.add("East Midlands"); comboBoxValues.add("West Midlands");
+                    comboBoxValues.add("South East"); comboBoxValues.add("East of England");
+                    comboBoxValues.add("South West");
+
+                    fldComboBox.setItems(comboBoxValues);
                 }
                 if (countryComboBox.getSelectionModel().getSelectedIndex() == 2) {
                     //Populating the first-level-division ComboBox with state values.
