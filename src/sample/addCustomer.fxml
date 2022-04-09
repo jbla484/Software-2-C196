@@ -17,18 +17,18 @@
       <Label layoutX="85.0" layoutY="92.0" text="Customer ID: " />
       <TextField fx:id="customerIDText" disable="true" editable="false" layoutX="201.0" layoutY="88.0" />
       <Label layoutX="85.0" layoutY="132.0" text="Name:" />
-      <TextField layoutX="201.0" layoutY="128.0" />
+      <TextField fx:id="customerNameText" layoutX="201.0" layoutY="128.0" />
       <Label layoutX="85.0" layoutY="172.0" text="Address:" />
       <Label layoutX="85.0" layoutY="214.0" text="Postal Code:" />
       <Label layoutX="85.0" layoutY="256.0" text="Phone Number:" />
-      <TextField layoutX="201.0" layoutY="168.0" />
-      <TextField layoutX="201.0" layoutY="210.0" />
-      <TextField layoutX="201.0" layoutY="252.0" />
+      <TextField fx:id="customerAddressText" layoutX="201.0" layoutY="168.0" />
+      <TextField fx:id="customerPostalCodeText" layoutX="201.0" layoutY="210.0" />
+      <TextField fx:id="customerPhoneNumberText" layoutX="201.0" layoutY="252.0" />
       <ComboBox fx:id="countryComboBox" layoutX="200.0" layoutY="294.0" prefWidth="150.0" />
       <Label layoutX="85.0" layoutY="298.0" text="Country:" />
       <ComboBox fx:id="fldComboBox" layoutX="200.0" layoutY="336.0" prefWidth="150.0" />
       <Label layoutX="85.0" layoutY="340.0" text="First Level Division:" />
-      <Button layoutX="166.0" layoutY="384.0" mnemonicParsing="false" text="Add" />
-      <Button layoutX="223.0" layoutY="384.0" mnemonicParsing="false" text="Cancel" />
+      <Button fx:id="addButton" layoutX="166.0" layoutY="384.0" mnemonicParsing="false" onAction="#handleAddButtonAction" text="Add" />
+      <Button fx:id="closeButton" layoutX="223.0" layoutY="384.0" mnemonicParsing="false" text="Cancel" />
    </children>
 </Pane>

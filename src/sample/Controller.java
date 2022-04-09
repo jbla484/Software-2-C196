@@ -26,6 +26,8 @@ public class Controller {
     public Button closeButton = new Button();
     @FXML
     public Button loginButton = new Button();
+    @FXML
+    public Button addButton = new Button();
 
     //TextFields
     @FXML
@@ -34,6 +36,14 @@ public class Controller {
     public TextField userPassword = new TextField();
     @FXML
     public TextField customerIDText = new TextField();
+    @FXML
+    public TextField customerNameText = new TextField();
+    @FXML
+    public TextField customerAddressText = new TextField();
+    @FXML
+    public TextField customerPostalCodeText = new TextField();
+    @FXML
+    public TextField customerPhoneNumberText = new TextField();
 
     // Labels
     @FXML
@@ -66,6 +76,14 @@ public class Controller {
     public Locale locale;
     @FXML
     public static int nextCustomerID = 1;
+    @FXML
+    public String customerName = "";
+    @FXML
+    public String customerAddress = "";
+    @FXML
+    public String customerPostalCode = "";
+    @FXML
+    public String customerPhoneNumber = "";
 
     //ComboBoxes
     @FXML
@@ -132,6 +150,8 @@ public class Controller {
                 }
                 if (countryComboBox.getSelectionModel().getSelectedIndex() == 1) {
                     //Populating the first-level-division ComboBox with England values.
+
+                    //FIXME MAY NOT BE THE PROPER VALUES
                     ObservableList<String> comboBoxValues = FXCollections.observableArrayList();
                     comboBoxValues.add("London"); comboBoxValues.add("North East");
                     comboBoxValues.add("North West"); comboBoxValues.add("Yorkshire");
@@ -211,6 +231,17 @@ public class Controller {
         while (resultset2.next()) {
             nextCustomerID++;
         }
+    }
+
+    @FXML
+    public void handleAddButtonAction() throws IOException {
+
+        Stage stage = (Stage) addButton.getScene().getWindow();
+
+        customerName = customerNameText.getText();
+        customerAddress = customerAddressText.getText();
+        customerPostalCode = customerPostalCodeText.getText();
+        customerPhoneNumber = customerPhoneNumberText.getText();
     }
 
     @FXML
