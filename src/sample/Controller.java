@@ -129,7 +129,7 @@ public class Controller {
 
         //Populate ComboBox
         comboBoxValues.add("Canada");
-        comboBoxValues.add("England");
+        comboBoxValues.add("United Kingdom");
         comboBoxValues.add("United States");
         countryComboBox.setItems(comboBoxValues);
 
@@ -141,23 +141,26 @@ public class Controller {
 
             if (countryComboBox.getSelectionModel().getSelectedIndex() == 0) {
                 //Populating the first-level-division ComboBox with Canada values.
-                comboBoxValues0.add("Alberta"); comboBoxValues0.add("British Columbia");
-                comboBoxValues0.add("Manitoba"); comboBoxValues0.add("New Brunswick");
-                comboBoxValues0.add("Newfoundland and Labrador"); comboBoxValues0.add("Nova Scotia");
-                comboBoxValues0.add("Ontario"); comboBoxValues0.add("Prince Edward Island");
-                comboBoxValues0.add("Québec"); comboBoxValues0.add("Saskatchewan");
+                comboBoxValues0.add("Northwest Territories");
+                comboBoxValues0.add("Alberta");
+                comboBoxValues0.add("British Columbia");
+                comboBoxValues0.add("Manitoba");
+                comboBoxValues0.add("New Brunswick");
+                comboBoxValues0.add("Nova Scotia");
+                comboBoxValues0.add("Prince Edward Island");
+                comboBoxValues0.add("Ontario");
+                comboBoxValues0.add("Québec");
+                comboBoxValues0.add("Saskatchewan");
+                comboBoxValues0.add("Nunavut");
+                comboBoxValues0.add("Yukon");
+                comboBoxValues0.add("Newfoundland and Labrador");
 
                 fldComboBox.setItems(comboBoxValues0);
             }
             if (countryComboBox.getSelectionModel().getSelectedIndex() == 1) {
-                //Populating the first-level-division ComboBox with England values.
-
-                //FIXME MAY NOT BE THE PROPER VALUES
-                comboBoxValues1.add("London"); comboBoxValues1.add("North East");
-                comboBoxValues1.add("North West"); comboBoxValues1.add("Yorkshire");
-                comboBoxValues1.add("East Midlands"); comboBoxValues1.add("West Midlands");
-                comboBoxValues1.add("South East"); comboBoxValues1.add("East of England");
-                comboBoxValues1.add("South West");
+                //Populating the first-level-division ComboBox with United Kingdom values.
+                comboBoxValues1.add("Scotland"); comboBoxValues1.add("Northern Ireland");
+                comboBoxValues1.add("Wales"); comboBoxValues1.add("England");
 
                 fldComboBox.setItems(comboBoxValues1);
             }
@@ -167,6 +170,7 @@ public class Controller {
                 comboBoxValues2.add("Arizona"); comboBoxValues2.add("Arkansas");
                 comboBoxValues2.add("California"); comboBoxValues2.add("Colorado");
                 comboBoxValues2.add("Connecticut"); comboBoxValues2.add("Delaware");
+                comboBoxValues2.add("District of Columbia");
                 comboBoxValues2.add("Florida"); comboBoxValues2.add("Georgia");
                 comboBoxValues2.add("Hawaii"); comboBoxValues2.add("Idaho");
                 comboBoxValues2.add("Illinois"); comboBoxValues2.add("Indiana");
@@ -197,6 +201,8 @@ public class Controller {
     @FXML
     public void checkLoginButton() throws SQLException, IOException {
 
+        Stage stage = (Stage) loginButton.getScene().getWindow();
+
         //Get user input from TextField and save data in variables.
         userIDs = userID.getText();
         userPasswords = userPassword.getText();
@@ -217,9 +223,9 @@ public class Controller {
             } else {
 
                 errorDescription.setText("Successfully logged in.");
-
                 switchToHome();
-                System.out.println("Logged in!");
+
+                stage.close();
             }
 
             //Find customer ID number for next customer
@@ -238,21 +244,9 @@ public class Controller {
         try {
             Stage stage = (Stage) addButton.getScene().getWindow();
 
-            //FORMAT ADDRESS TEXT, throw exception if not formatted correctly
-            //FIXME ADD DIFFERENT FORMATS FOR THE DIFFERENT COUNTRIES
-            Pattern r = Pattern.compile("\\d{1,5}\\s\\w.\\s(\\b\\w*\\b\\s){1,2}\\w*\\.");
-            Matcher m = r.matcher(customerAddressText.getText());
-
-            if (m.find( )) {
-                customerAddress = customerAddressText.getText();
-            } else {
-                throw new Exception();
-            }
-
             //Get input values from TextFields into variables
             //FIXME FORMAT ADDRESSES TO REQUIREMENT A2
             customerName = customerNameText.getText();
-
             customerPostalCode = customerPostalCodeText.getText();
             customerPhoneNumber = customerPhoneNumberText.getText();
 
@@ -261,6 +255,44 @@ public class Controller {
             String customerCountry = comboBoxValues.get(countryIndex);
             String customerFLD = "";
 
+            //FORMAT ADDRESS TEXT, throw exception if not formatted correctly
+
+            //United States address format.
+            if (customerCountry.equals("United States")) {
+                Pattern r = Pattern.compile("\\d+\\s\\w+\\s\\w+\\p{Punct}\\s\\w+\\s\\w+");
+                Matcher m = r.matcher(customerAddressText.getText());
+
+                if (m.find()) {
+                    customerAddress = customerAddressText.getText();
+                } else {
+                    throw new Exception();
+                }
+            }
+            //United Kingdom address format.
+            //FIXME NOT WORKING CORRECTLY
+            if (customerCountry.equals("United Kingdom")) {
+                Pattern r = Pattern.compile("\\d+\\s\\w+\\s\\w+\\p{Punct}\\s\\w+\\p{Punct}\\s\\w+"); //this
+                Matcher m = r.matcher(customerAddressText.getText());
+
+                if (m.find()) {
+                    customerAddress = customerAddressText.getText();
+                } else {
+                    throw new Exception();
+                }
+            }
+            //Canada address format.
+            if (customerCountry.equals("Canada")) {
+                Pattern r = Pattern.compile("\\d+\\s\\w+\\s\\w+\\p{Punct}\\s\\w+");
+                Matcher m = r.matcher(customerAddressText.getText());
+
+                if (m.find()) {
+                    customerAddress = customerAddressText.getText();
+                } else {
+                    throw new Exception();
+                }
+            }
+
+            //Set first-level-division based on fldIndex value.
             if (customerCountry.equals("United States")) {
                 customerFLD = comboBoxValues2.get(fldIndex);
             }
@@ -303,6 +335,8 @@ public class Controller {
 
             statement.executeUpdate(query);
 
+            nextCustomerID++;
+
             //Once done, close
             stage.close();
         }
@@ -319,6 +353,11 @@ public class Controller {
     }
 
     @FXML
+    private void closeApplication() {
+        System.exit(0);
+    }
+
+    @FXML
     private void switchToHome() throws IOException {
         String fileName = "home";
         Main.loadHome(fileName);
@@ -328,5 +367,11 @@ public class Controller {
     private void switchToAddCustomer() throws IOException {
         String fileName = "addCustomer";
         Main.loadAddCustomer(fileName);
+    }
+
+    @FXML
+    private void switchToUpdateCustomer() throws IOException {
+        String fileName = "updateCustomer";
+        Main.loadModifyCustomer(fileName);
     }
 }

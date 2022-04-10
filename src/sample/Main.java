@@ -50,6 +50,19 @@ public class Main extends Application {
         stage.setMaxWidth(stage.getWidth());
     }
 
+    public static void loadModifyCustomer(String file) throws IOException {
+        Stage stage = new Stage();
+        Scene scene = new Scene(loadFXML(file), 424, 423);
+        stage.setTitle("Modify Customer");
+        stage.setScene(scene);
+        stage.sizeToScene();
+        stage.show();
+        stage.setMinWidth(stage.getWidth());
+        stage.setMinHeight(stage.getHeight());
+        stage.setMaxHeight(stage.getHeight());
+        stage.setMaxWidth(stage.getWidth());
+    }
+
 
     public static void main(String[] args) {
         JDBC.makeConnection();
