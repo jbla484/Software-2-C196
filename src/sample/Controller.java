@@ -269,9 +269,8 @@ public class Controller {
                 }
             }
             //United Kingdom address format.
-            //FIXME NOT WORKING CORRECTLY
             if (customerCountry.equals("United Kingdom")) {
-                Pattern r = Pattern.compile("\\d+\\s\\w+\\s\\w+\\p{Punct}\\s\\w+\\p{Punct}\\s\\w+"); //this
+                Pattern r = Pattern.compile("\\d+\\s\\w+\\s\\w+\\p{Punct}\\s\\w+\\p{Punct}\\s\\w+");
                 Matcher m = r.matcher(customerAddressText.getText());
 
                 if (m.find()) {
@@ -296,7 +295,7 @@ public class Controller {
             if (customerCountry.equals("United States")) {
                 customerFLD = comboBoxValues2.get(fldIndex);
             }
-            if (customerCountry.equals("England")) {
+            if (customerCountry.equals("United Kingdom")) {
                 customerFLD = comboBoxValues1.get(fldIndex);
             }
             if (customerCountry.equals("Canada")) {
@@ -328,12 +327,12 @@ public class Controller {
                 }
             }
 
-            query = "INSERT INTO customers VALUES ('" + nextCustomerID + "', '" + customerName + "', '" +
+            String query2 = "INSERT INTO customers VALUES ('" + nextCustomerID + "', '" + customerName + "', '" +
                     customerAddress + "', '" + customerPostalCode + "', '" + customerPhoneNumber + "', '" +
                     s + "', '" + createdBy + "', '" + timestamp + "', '" + createdBy + "', '" +
                     divisionID + "');";
 
-            statement.executeUpdate(query);
+            statement.executeUpdate(query2);
 
             nextCustomerID++;
 
@@ -341,7 +340,7 @@ public class Controller {
             stage.close();
         }
         catch (Exception e) {
-            System.out.println("Incorrect address format.");
+            System.out.println(e.getMessage());
         }
 
     }
