@@ -26,7 +26,7 @@ public class Main extends Application {
 
     public static void loadHome(String file) throws IOException {
         Stage stage = new Stage();
-        Scene scene = new Scene(loadFXML(file), 603, 312);
+        Scene scene = new Scene(loadFXML(file), 650, 312);
         stage.setTitle("Home");
         stage.setScene(scene);
         stage.sizeToScene();

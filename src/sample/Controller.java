@@ -1,9 +1,14 @@
 package sample;
 
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import java.io.IOException;
 import java.sql.*;
@@ -14,10 +19,37 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.SimpleTimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Controller {
+
+    // TableViews
+    @FXML
+    public TableView<Customer> customerTable = new TableView<>();
+
+    // TableColumns
+    @FXML
+    public TableColumn<Customer, Number> customerIDCol = new TableColumn<>("Customer ID");
+    @FXML
+    public TableColumn<Customer, String> customerNameCol = new TableColumn<>("Customer Name");
+    @FXML
+    public TableColumn<Customer, String> customerAddressCol = new TableColumn<>("Address");
+    @FXML
+    public TableColumn<Customer, String> customerPostalCol = new TableColumn<>("Postal Code");
+    @FXML
+    public TableColumn<Customer, String> customerPhoneCol = new TableColumn<>("Phone Number");
+    @FXML
+    public TableColumn<Customer, String> customerCreationDateCol = new TableColumn<>("Creation Date");
+    @FXML
+    public TableColumn<Customer, String> customerCreatedByCol = new TableColumn<>("Created By");
+    @FXML
+    public TableColumn<Customer, String> customerLastUpdateCol = new TableColumn<>("Last Update");
+    @FXML
+    public TableColumn<Customer, String> customerLastUpdatedByCol = new TableColumn<>("Last Updated By");
+    @FXML
+    public TableColumn<Customer, Number> customerDivisionIDCol = new TableColumn<>("Division ID");
 
     //Buttons
     @FXML
@@ -98,7 +130,64 @@ public class Controller {
     public ComboBox<String> fldComboBox = new ComboBox<>();
 
     @FXML
-    public void initialize() {
+    public void initialize() throws SQLException {
+
+        // Sets Cell Value Factory for columns
+        customerIDCol.setCellValueFactory(new PropertyValueFactory<>("id"));
+        customerNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+        customerAddressCol.setCellValueFactory(new PropertyValueFactory<>("address"));
+        customerPostalCol.setCellValueFactory(new PropertyValueFactory<>("postal"));
+        customerPhoneCol.setCellValueFactory(new PropertyValueFactory<>("phone"));
+        customerCreationDateCol.setCellValueFactory(new PropertyValueFactory<>("creation"));
+        customerCreatedByCol.setCellValueFactory(new PropertyValueFactory<>("created by"));
+        customerLastUpdateCol.setCellValueFactory(new PropertyValueFactory<>("updated"));
+        customerLastUpdatedByCol.setCellValueFactory(new PropertyValueFactory<>("updated by"));
+        customerDivisionIDCol.setCellValueFactory(new PropertyValueFactory<>("division"));
+
+        // Sets Cell Value Factory for cells
+        customerIDCol.setCellValueFactory(cellData ->
+                new SimpleIntegerProperty(cellData.getValue().getId()));
+        customerNameCol.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getName()));
+        customerAddressCol.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getAddress()));
+        customerPostalCol.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getPostalCode()));
+        customerPhoneCol.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getPhoneNumber()));
+        customerCreationDateCol.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getCreationDate()));
+        customerCreatedByCol.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getCreatedBy()));
+        customerLastUpdateCol.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getLastUpdate()));
+        customerLastUpdatedByCol.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getLastUpdatedBy()));
+        customerDivisionIDCol.setCellValueFactory(cellData ->
+                new SimpleIntegerProperty(cellData.getValue().getDivisionID()));
+
+        // Populates the tables
+        ObservableList<Customer> customers = FXCollections.observableArrayList();
+        String query = "SELECT * FROM customers";
+        Connection connection = JDBC.getConnection();
+        Statement statement = connection.createStatement();
+        ResultSet resultset = statement.executeQuery(query);
+
+        while (resultset.next()) {
+            Customer customer = new Customer();
+            customer.setId(resultset.getInt(1));
+            customer.setName(resultset.getString(2));
+            customer.setAddress(resultset.getString(3));
+            customer.setPostalCode(resultset.getString(4));
+            customer.setPhoneNumber(resultset.getString(5));
+            customer.setCreationDate(resultset.getString(6));
+            customer.setCreatedBy(resultset.getString(7));
+            customer.setLastUpdate(resultset.getString(8));
+            customer.setLastUpdatedBy(resultset.getString(9));
+            customer.setDivisionID(resultset.getInt(10));
+            customers.add(customer);
+        }
+        customerTable.setItems(customers);
 
         //Get locale based on devices location, and create a resource bundle from it.
         locale = Locale.getDefault();
@@ -242,10 +331,10 @@ public class Controller {
     public void handleAddButtonAction() {
 
         try {
+
             Stage stage = (Stage) addButton.getScene().getWindow();
 
             //Get input values from TextFields into variables
-            //FIXME FORMAT ADDRESSES TO REQUIREMENT A2
             customerName = customerNameText.getText();
             customerPostalCode = customerPostalCodeText.getText();
             customerPhoneNumber = customerPhoneNumberText.getText();
@@ -254,8 +343,6 @@ public class Controller {
             int fldIndex = fldComboBox.getSelectionModel().getSelectedIndex();
             String customerCountry = comboBoxValues.get(countryIndex);
             String customerFLD = "";
-
-            //FORMAT ADDRESS TEXT, throw exception if not formatted correctly
 
             //United States address format.
             if (customerCountry.equals("United States")) {
@@ -268,6 +355,7 @@ public class Controller {
                     throw new Exception();
                 }
             }
+
             //United Kingdom address format.
             if (customerCountry.equals("United Kingdom")) {
                 Pattern r = Pattern.compile("\\d+\\s\\w+\\s\\w+\\p{Punct}\\s\\w+\\p{Punct}\\s\\w+");
@@ -279,6 +367,7 @@ public class Controller {
                     throw new Exception();
                 }
             }
+
             //Canada address format.
             if (customerCountry.equals("Canada")) {
                 Pattern r = Pattern.compile("\\d+\\s\\w+\\s\\w+\\p{Punct}\\s\\w+");

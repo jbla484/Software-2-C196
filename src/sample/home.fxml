@@ -8,7 +8,7 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="312.0" prefWidth="603.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="312.0" prefWidth="650.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
    <children>
       <Label fx:id="errorDescription" layoutX="376.0" layoutY="235.0" prefHeight="17.0" prefWidth="209.0" style="-fx-alignment: center;" textFill="#ff1e1e" />
       <Line endX="62.0" layoutX="79.0" startX="62.0" startY="312.0" />
@@ -18,13 +18,21 @@
       <Hyperlink layoutX="10.0" layoutY="178.0" text="Modify Appointment" />
       <Hyperlink layoutX="45.0" layoutY="224.0" text="Reports" />
       <Hyperlink layoutX="19.0" layoutY="275.0" onAction="#closeApplication" text="Close Application" />
-      <TableView layoutX="165.0" layoutY="66.0" prefHeight="207.0" prefWidth="417.0">
+      <TableView fx:id="customerTable" layoutX="165.0" layoutY="66.0" prefHeight="207.0" prefWidth="461.0">
         <columns>
-          <TableColumn prefWidth="75.0" text="C1" />
-          <TableColumn prefWidth="75.0" text="C2" />
+          <TableColumn fx:id="customerIDCol" text="Customer ID" />
+          <TableColumn fx:id="customerNameCol" minWidth="0.0" prefWidth="109.0" text="Customer Name" />
+            <TableColumn fx:id="customerAddressCol" prefWidth="103.0" text="Address" />
+            <TableColumn fx:id="customerPostalCol" prefWidth="81.0" text="Postal Code" />
+            <TableColumn fx:id="customerPhoneCol" prefWidth="109.0" text="Phone Number" />
+            <TableColumn fx:id="customerCreationDateCol" minWidth="9.0" prefWidth="123.0" text="Creation Date" />
+            <TableColumn fx:id="customerCreatedByCol" minWidth="0.0" prefWidth="74.0" text="Created By" />
+            <TableColumn fx:id="customerLastUpdateCol" minWidth="7.0" prefWidth="129.0" text="Last Update" />
+            <TableColumn fx:id="customerLastUpdatedByCol" minWidth="0.0" prefWidth="112.0" text="Last Updated By" />
+            <TableColumn fx:id="customerDivisionIDCol" prefWidth="67.0" text="Division ID" />
         </columns>
       </TableView>
-      <Label layoutX="311.0" layoutY="21.0" text="Appointments">
+      <Label layoutX="349.0" layoutY="21.0" text="Customers">
          <font>
             <Font size="20.0" />
          </font>
