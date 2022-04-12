@@ -26,8 +26,11 @@ public class Controller {
     // TableViews
     @FXML
     public TableView<Customer> customerTable = new TableView<>();
+    @FXML
+    public TableView<Appointment> appointmentTable = new TableView<>();
 
-    // TableColumns
+
+    // Customer TableColumns
     @FXML
     public TableColumn<Customer, Number> customerIDCol = new TableColumn<>("Customer ID");
     @FXML
@@ -49,6 +52,37 @@ public class Controller {
     @FXML
     public TableColumn<Customer, Number> customerDivisionIDCol = new TableColumn<>("Division ID");
 
+    //Appointment TableColumns
+    @FXML
+    public TableColumn<Appointment, Number> appointmentIDCol = new TableColumn<>("Appointment ID");
+    @FXML
+    public TableColumn<Appointment, String> appointmentTitleCol = new TableColumn<>("Title");
+    @FXML
+    public TableColumn<Appointment, String> appointmentDescriptionCol = new TableColumn<>("Description");
+    @FXML
+    public TableColumn<Appointment, String> appointmentLocationCol = new TableColumn<>("Location");
+    @FXML
+    public TableColumn<Appointment, String> appointmentTypeCol = new TableColumn<>("Type");
+    @FXML
+    public TableColumn<Appointment, String> appointmentStartCol = new TableColumn<>("Start");
+    @FXML
+    public TableColumn<Appointment, String> appointmentEndCol = new TableColumn<>("End");
+    @FXML
+    public TableColumn<Appointment, String> appointmentCreationCol = new TableColumn<>("Creation Date");
+    @FXML
+    public TableColumn<Appointment, String> appointmentCreatedByCol = new TableColumn<>("Created By");
+    @FXML
+    public TableColumn<Appointment, String> appointmentUpdatedCol = new TableColumn<>("Last Update");
+    @FXML
+    public TableColumn<Appointment, String> appointmentUpdatedByCol = new TableColumn<>("Updated By");
+    @FXML
+    public TableColumn<Appointment, Number> appointmentCustomerIDCol = new TableColumn<>("Customer ID");
+    @FXML
+    public TableColumn<Appointment, Number> appointmentUserIDCol = new TableColumn<>("User ID");
+    @FXML
+    public TableColumn<Appointment, Number> appointmentContactIDCol = new TableColumn<>("Contact ID");
+
+
     //Buttons
     @FXML
     public Button closeButton = new Button();
@@ -57,11 +91,13 @@ public class Controller {
     @FXML
     public Button addButton = new Button();
 
-    //TextFields
+    //Login TextFields
     @FXML
     public TextField userID = new TextField();
     @FXML
     public TextField userPassword = new TextField();
+
+    //Customer TextFields
     @FXML
     public TextField customerIDText = new TextField();
     @FXML
@@ -82,6 +118,18 @@ public class Controller {
     public TextField customerPhoneNumberText = new TextField();
     @FXML
     public TextField customerPhoneNumberText2 = new TextField();
+
+    //Appointment TextFields
+    @FXML
+    public TextField appointmentIDText = new TextField();
+    @FXML
+    public TextField appointmentTitleText = new TextField();
+    @FXML
+    public TextField appointmentDescriptionText = new TextField();
+    @FXML
+    public TextField appointmentLocationText = new TextField();
+    @FXML
+    public TextField appointmentTypeText = new TextField();
 
     // Labels
     @FXML
@@ -104,6 +152,10 @@ public class Controller {
     public Label dashUsername = new Label();
     @FXML
     public Label dashPassword = new Label();
+    @FXML
+    public Label customerErrorLabel = new Label();
+    @FXML
+    public Label addCustomerErrorLabel = new Label();
 
     //Variables
     @FXML
@@ -116,6 +168,8 @@ public class Controller {
     public Locale locale;
     @FXML
     public static int nextCustomerID = 1;
+    @FXML
+    public static int nextAppointmentID = 1;
     @FXML
     public String customerName = "";
     @FXML
@@ -133,7 +187,9 @@ public class Controller {
     @FXML
     public ObservableList<String> comboBoxValues2 = FXCollections.observableArrayList();
     @FXML
-    public ObservableList<Customer> customers = FXCollections.observableArrayList();
+    public static ObservableList<Customer> customers = FXCollections.observableArrayList();
+    @FXML
+    public static ObservableList<Appointment> appointments = FXCollections.observableArrayList();
     @FXML
     public static String copyCustomerID = "";
     @FXML
@@ -145,7 +201,11 @@ public class Controller {
     @FXML
     public static String copyCustomerPhone = "";
     @FXML
+    public static String copyCustomerCountry = "";
+    @FXML
     public static String copyCustomerDivisionID = "";
+    @FXML
+    public static int first = 0;
 
 
     //ComboBoxes
@@ -156,6 +216,8 @@ public class Controller {
 
     @FXML
     public void initialize() throws SQLException {
+
+        customerTable.refresh();
 
         if(found) {
 
@@ -186,6 +248,7 @@ public class Controller {
             }
 
         }
+        found = false;
 
         // Sets Cell Value Factory for columns
         customerIDCol.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -198,6 +261,21 @@ public class Controller {
         customerLastUpdateCol.setCellValueFactory(new PropertyValueFactory<>("updated"));
         customerLastUpdatedByCol.setCellValueFactory(new PropertyValueFactory<>("updated by"));
         customerDivisionIDCol.setCellValueFactory(new PropertyValueFactory<>("division"));
+
+        appointmentIDCol.setCellValueFactory(new PropertyValueFactory<>("id"));
+        appointmentTitleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
+        appointmentDescriptionCol.setCellValueFactory(new PropertyValueFactory<>("description"));
+        appointmentLocationCol.setCellValueFactory(new PropertyValueFactory<>("location"));
+        appointmentTypeCol.setCellValueFactory(new PropertyValueFactory<>("type"));
+        appointmentStartCol.setCellValueFactory(new PropertyValueFactory<>("start"));
+        appointmentEndCol.setCellValueFactory(new PropertyValueFactory<>("end"));
+        appointmentCreationCol.setCellValueFactory(new PropertyValueFactory<>("creation date"));
+        appointmentCreatedByCol.setCellValueFactory(new PropertyValueFactory<>("created by"));
+        appointmentUpdatedCol.setCellValueFactory(new PropertyValueFactory<>("updated"));
+        appointmentUpdatedByCol.setCellValueFactory(new PropertyValueFactory<>("updated by"));
+        appointmentCustomerIDCol.setCellValueFactory(new PropertyValueFactory<>("customer id"));
+        appointmentUserIDCol.setCellValueFactory(new PropertyValueFactory<>("user id"));
+        appointmentContactIDCol.setCellValueFactory(new PropertyValueFactory<>("contact id"));
 
         // Sets Cell Value Factory for cells
         customerIDCol.setCellValueFactory(cellData ->
@@ -221,27 +299,84 @@ public class Controller {
         customerDivisionIDCol.setCellValueFactory(cellData ->
                 new SimpleIntegerProperty(cellData.getValue().getDivisionID()));
 
-        // Populates the tables
-        String query = "SELECT * FROM customers";
-        Connection connection = JDBC.getConnection();
-        Statement statement = connection.createStatement();
-        ResultSet resultset = statement.executeQuery(query);
+        appointmentIDCol.setCellValueFactory(cellData ->
+                new SimpleIntegerProperty(cellData.getValue().getID()));
+        appointmentTitleCol.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getTitle()));
+        appointmentDescriptionCol.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getDescription()));
+        appointmentLocationCol.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getLocation()));
+        appointmentTypeCol.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getType()));
+        appointmentStartCol.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getStart()));
+        appointmentEndCol.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getEnd()));
+        appointmentCreationCol.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getCreation()));
+        appointmentCreatedByCol.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getCreatedBy()));
+        appointmentUpdatedCol.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getUpdated()));
+        appointmentUpdatedByCol.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getUpdatedBy()));
+        appointmentCustomerIDCol.setCellValueFactory(cellData ->
+                new SimpleIntegerProperty(cellData.getValue().getCustomerID()));
+        appointmentUserIDCol.setCellValueFactory(cellData ->
+                new SimpleIntegerProperty(cellData.getValue().getUserID()));
+        appointmentContactIDCol.setCellValueFactory(cellData ->
+                new SimpleIntegerProperty(cellData.getValue().getContactID()));
 
-        while (resultset.next()) {
-            Customer customer = new Customer();
-            customer.setId(resultset.getInt(1));
-            customer.setName(resultset.getString(2));
-            customer.setAddress(resultset.getString(3));
-            customer.setPostalCode(resultset.getString(4));
-            customer.setPhoneNumber(resultset.getString(5));
-            customer.setCreationDate(resultset.getString(6));
-            customer.setCreatedBy(resultset.getString(7));
-            customer.setLastUpdate(resultset.getString(8));
-            customer.setLastUpdatedBy(resultset.getString(9));
-            customer.setDivisionID(resultset.getInt(10));
-            customers.add(customer);
+
+        if (first == 1) {
+            // Populates the tables
+            String query = "SELECT * FROM customers";
+            Connection connection = JDBC.getConnection();
+            Statement statement = connection.createStatement();
+            ResultSet resultset = statement.executeQuery(query);
+
+            while (resultset.next()) {
+                Customer customer = new Customer();
+                customer.setId(resultset.getInt(1));
+                customer.setName(resultset.getString(2));
+                customer.setAddress(resultset.getString(3));
+                customer.setPostalCode(resultset.getString(4));
+                customer.setPhoneNumber(resultset.getString(5));
+                customer.setCreationDate(resultset.getString(6));
+                customer.setCreatedBy(resultset.getString(7));
+                customer.setLastUpdate(resultset.getString(8));
+                customer.setLastUpdatedBy(resultset.getString(9));
+                customer.setDivisionID(resultset.getInt(10));
+                customers.add(customer);
+            }
+            customerTable.setItems(customers);
+
+            // Populates the tables
+            String query2 = "SELECT * FROM appointments";
+            ResultSet resultset2 = statement.executeQuery(query2);
+
+            while (resultset2.next()) {
+                Appointment appointment = new Appointment();
+                appointment.setID(resultset2.getInt(1));
+                appointment.setTitle(resultset2.getString(2));
+                appointment.setDescription(resultset2.getString(3));
+                appointment.setLocation(resultset2.getString(4));
+                appointment.setType(resultset2.getString(5));
+                appointment.setStart(resultset2.getString(6));
+                appointment.setEnd(resultset2.getString(7));
+                appointment.setCreation(resultset2.getString(8));
+                appointment.setCreatedBy(resultset2.getString(9));
+                appointment.setUpdated(resultset2.getString(10));
+                appointment.setUpdatedBy(resultset2.getString(11));
+                appointment.setCustomerID(Integer.parseInt(resultset2.getString(12)));
+                appointment.setUserID(Integer.parseInt(resultset2.getString(13)));
+                appointment.setContactID(Integer.parseInt(resultset2.getString(14)));
+                appointments.add(appointment);
+            }
+            appointmentTable.setItems(appointments);
         }
-        customerTable.setItems(customers);
+        first++;
 
         //Get locale based on devices location, and create a resource bundle from it.
         locale = Locale.getDefault();
@@ -269,6 +404,7 @@ public class Controller {
             loginButton.setText(rb.getString("home2"));
         }
         customerIDText.setText("" + nextCustomerID);
+        appointmentIDText.setText("" + nextAppointmentID);
 
         //Populate ComboBox
         comboBoxValues.add("Canada");
@@ -386,6 +522,8 @@ public class Controller {
 
         try {
 
+            customerErrorLabel.setText("");
+
             Stage stage = (Stage) addButton.getScene().getWindow();
 
             //Get input values from TextFields into variables
@@ -488,7 +626,96 @@ public class Controller {
             stage.close();
         }
         catch (Exception e) {
-            System.out.println(e.getMessage());
+            if (customerNameText.getText().equals("") || customerAddressText.getText().equals("") || customerPostalCodeText.getText().equals("") || customerPhoneNumberText.getText().equals("") || countryComboBox.getSelectionModel().getSelectedIndex() < 0 || fldComboBox.getSelectionModel().getSelectedIndex() < 0) {
+                addCustomerErrorLabel.setText("Missing input values.");
+            } else {
+                addCustomerErrorLabel.setText("Wrong address format.");
+            }
+        }
+    }
+
+    @FXML
+    public void handleModifyAddButtonAction() {
+
+        try {
+
+            customerErrorLabel.setText("");
+
+            Stage stage = (Stage) addButton.getScene().getWindow();
+
+            //Get input values from TextFields into variables
+            customerName = customerNameText2.getText();
+            customerPostalCode = customerPostalCodeText2.getText();
+            customerPhoneNumber = customerPhoneNumberText2.getText();
+
+            int countryIndex = countryComboBox.getSelectionModel().getSelectedIndex();
+            int fldIndex = fldComboBox.getSelectionModel().getSelectedIndex();
+            String customerCountry = comboBoxValues.get(countryIndex);
+            String customerFLD = "";
+
+            //Set first-level-division based on fldIndex value.
+            if (customerCountry.equals("United States")) {
+                customerFLD = comboBoxValues2.get(fldIndex);
+            }
+            if (customerCountry.equals("United Kingdom")) {
+                customerFLD = comboBoxValues1.get(fldIndex);
+            }
+            if (customerCountry.equals("Canada")) {
+                customerFLD = comboBoxValues0.get(fldIndex);
+            }
+
+            String query = "SELECT Division_ID, Division FROM first_level_divisions;";
+
+            Connection connection = JDBC.getConnection();
+            Statement statement = connection.createStatement();
+            try (ResultSet resultset = statement.executeQuery(query)) {
+
+                while (resultset.next()) {
+                    if (customerFLD.equals(resultset.getString(2))) {
+                        customerFLD = resultset.getString(1);
+                        break;
+                    }
+                }
+            }
+
+            //Create a query and execute it.
+            LocalDate localDate = LocalDate.now();
+            LocalTime localTime = LocalTime.now();
+            LocalDateTime localDateTime = LocalDateTime.of(localDate, localTime);
+            localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            Timestamp timestamp = Timestamp.valueOf(localDateTime);
+            String s = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(timestamp);
+
+            String query2 = "UPDATE customers SET Customer_Name = '" + customerName + "', Address = '" + customerAddressText2.getText() + "', Postal_Code = '" + customerPostalCode + "', Phone = '" + customerPhoneNumber + "', Last_Update = '" + s + "', Division_ID = '" + customerFLD + "' WHERE Customer_ID = " + customerIDText2.getText() + ";";
+            statement.executeUpdate(query2);
+
+            //FIXME NOT UPDATING CUSTOMERS OBSERVABLE LIST
+            for (Customer c : customers) {
+                if (String.valueOf(c.getId()).equals(customerIDText2.getText())) {
+                    customers.remove(c);
+                    c.setName(customerName);
+                    c.setAddress(customerAddressText2.getText());
+                    c.setPostalCode(customerPostalCode);
+                    c.setPhoneNumber(customerPhoneNumber);
+                    c.setLastUpdate(s);
+                    c.setDivisionID(Integer.parseInt(customerFLD));
+                    customers.add(c);
+                    break;
+                }
+            }
+
+            customerTable.setItems(customers);
+            customerTable.refresh();
+
+            //Once done, close
+            stage.close();
+        }
+        catch (Exception e) {
+            if (customerNameText2.getText().equals("") || customerAddressText2.getText().equals("") || customerPostalCodeText2.getText().equals("") || customerPhoneNumberText2.getText().equals("") || countryComboBox.getSelectionModel().getSelectedIndex() < 0 || fldComboBox.getSelectionModel().getSelectedIndex() < 0) {
+                addCustomerErrorLabel.setText("Missing input values.");
+            } else {
+                addCustomerErrorLabel.setText("Wrong address format.");
+            }
         }
 
     }
@@ -496,26 +723,72 @@ public class Controller {
     @FXML
     public void modifyCustomer() throws IOException {
 
-        customerTable.getSelectionModel().setCellSelectionEnabled(true);
-        customerTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        try {
+            customerTable.getSelectionModel().setCellSelectionEnabled(true);
+            customerTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
-        Customer customer = customerTable.getSelectionModel().getSelectedItem();
-
-        for (Customer c : customers) {
-
-            if (c.getId() == customer.getId()) {
-                found = true;
-
-                copyCustomerID = String.valueOf(c.getId());
-                copyCustomerName = c.getName();
-                copyCustomerAddress = c.getAddress();
-                copyCustomerPostal = c.getPostalCode();
-                copyCustomerPhone = c.getPhoneNumber();
-                copyCustomerDivisionID = String.valueOf(c.getDivisionID());
-
-                switchToUpdateCustomer();
-                break;
+            if (customerTable.getSelectionModel().getSelectedItem() == null) {
+                throw new Exception();
             }
+
+            customerErrorLabel.setText("");
+            Customer customer = customerTable.getSelectionModel().getSelectedItem();
+
+            for (Customer c : customers) {
+
+                if (c.getId() == customer.getId()) {
+                    found = true;
+
+                    copyCustomerID = String.valueOf(c.getId());
+                    copyCustomerName = c.getName();
+                    copyCustomerAddress = c.getAddress();
+                    copyCustomerPostal = c.getPostalCode();
+                    copyCustomerPhone = c.getPhoneNumber();
+                    copyCustomerDivisionID = String.valueOf(c.getDivisionID());
+
+                    switchToUpdateCustomer();
+                    break;
+                }
+            }
+            customerTable.refresh();
+        } catch (Exception e) {
+            customerErrorLabel.setText("Please select a customer to be modified.");
+        }
+    }
+
+    @FXML
+    public void deleteCustomer() throws Exception {
+
+        try {
+
+            customerTable.getSelectionModel().setCellSelectionEnabled(true);
+            customerTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+
+            if (customerTable.getSelectionModel().getSelectedItem() == null) {
+                throw new Exception();
+            }
+
+            customerErrorLabel.setText("");
+            Customer customer = customerTable.getSelectionModel().getSelectedItem();
+
+            for (Customer c : customers) {
+
+                if (c.getId() == customer.getId()) {
+
+                    String query = "DELETE FROM customers WHERE Customer_ID = " + customer.getId() + ";";
+
+                    Connection connection = JDBC.getConnection();
+                    Statement statement = connection.createStatement();
+                    statement.executeUpdate(query);
+
+                    customers.remove(c);
+                    break;
+                }
+            }
+            customerErrorLabel.setText("Customer has been successfully deleted.");
+            customerTable.refresh();
+        } catch (Exception e) {
+            customerErrorLabel.setText("Please select a customer to be deleted.");
         }
     }
 
@@ -537,9 +810,53 @@ public class Controller {
     }
 
     @FXML
-    private void switchToAddCustomer() throws IOException {
+    private void switchToAddCustomer() throws IOException, SQLException {
+        customerErrorLabel.setText("");
+
+        //Find next Customer ID
+        String query3 = "SELECT Customer_ID FROM customers;";
+        int max = 0;
+
+        Connection connection3 = JDBC.getConnection();
+        Statement statement3 = connection3.createStatement();
+        try (ResultSet resultset = statement3.executeQuery(query3)) {
+
+            while (resultset.next()) {
+                if (Integer.parseInt(resultset.getString(1)) > max) {
+                    max = Integer.parseInt(resultset.getString(1));
+                }
+            }
+        }
+        nextCustomerID = ++max;
+
         String fileName = "addCustomer";
         Main.loadAddCustomer(fileName);
+    }
+
+    @FXML
+    private void switchToAddAppointment() throws IOException, SQLException {
+        customerErrorLabel.setText("");
+
+        //Find next Customer ID
+        String query3 = "SELECT Appointment_ID FROM appointments;";
+        int max = 0;
+
+        Connection connection3 = JDBC.getConnection();
+        Statement statement3 = connection3.createStatement();
+        try (ResultSet resultset = statement3.executeQuery(query3)) {
+
+            while (resultset.next()) {
+                if (Integer.parseInt(resultset.getString(1)) > max) {
+                    max = Integer.parseInt(resultset.getString(1));
+                }
+            }
+        }
+        nextAppointmentID = ++max;
+
+        //Find next Appointment ID
+
+        String fileName = "addAppointment";
+        Main.loadAddAppointment(fileName);
     }
 
     @FXML

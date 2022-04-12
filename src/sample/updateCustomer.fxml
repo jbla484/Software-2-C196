@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="423.0" prefWidth="424.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="424.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
    <children>
       <Label layoutX="135.0" layoutY="27.0" text="Modify Customer">
          <font>
@@ -28,7 +28,8 @@
       <Label layoutX="85.0" layoutY="298.0" text="Country:" />
       <ComboBox fx:id="fldComboBox" layoutX="200.0" layoutY="336.0" prefWidth="150.0" />
       <Label layoutX="85.0" layoutY="340.0" text="First Level Division:" />
-      <Button fx:id="addButton" layoutX="166.0" layoutY="384.0" mnemonicParsing="false" onAction="#handleAddButtonAction" text="Add" />
-      <Button fx:id="closeButton" layoutX="223.0" layoutY="384.0" mnemonicParsing="false" text="Cancel" />
+      <Button fx:id="addButton" layoutX="149.0" layoutY="409.0" mnemonicParsing="false" onAction="#handleModifyAddButtonAction" text="Add" />
+      <Button fx:id="closeButton" layoutX="223.0" layoutY="409.0" mnemonicParsing="false" text="Cancel" />
+      <Label fx:id="addCustomerErrorLabel" layoutX="126.0" layoutY="379.0" prefHeight="17.0" prefWidth="172.0" style="-fx-alignment: center;" textAlignment="CENTER" textFill="#ff2929" />
    </children>
 </Pane>

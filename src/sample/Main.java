@@ -26,7 +26,7 @@ public class Main extends Application {
 
     public static void loadHome(String file) throws IOException {
         Stage stage = new Stage();
-        Scene scene = new Scene(loadFXML(file), 650, 312);
+        Scene scene = new Scene(loadFXML(file), 880, 356);
         stage.setTitle("Home");
         stage.setScene(scene);
         stage.sizeToScene();
@@ -39,8 +39,21 @@ public class Main extends Application {
 
     public static void loadAddCustomer(String file) throws IOException {
         Stage stage = new Stage();
-        Scene scene = new Scene(loadFXML(file), 424, 423);
+        Scene scene = new Scene(loadFXML(file), 424, 450);
         stage.setTitle("Add Customer");
+        stage.setScene(scene);
+        stage.sizeToScene();
+        stage.show();
+        stage.setMinWidth(stage.getWidth());
+        stage.setMinHeight(stage.getHeight());
+        stage.setMaxHeight(stage.getHeight());
+        stage.setMaxWidth(stage.getWidth());
+    }
+
+    public static void loadAddAppointment(String file) throws IOException {
+        Stage stage = new Stage();
+        Scene scene = new Scene(loadFXML(file), 424, 566);
+        stage.setTitle("Add Appointment");
         stage.setScene(scene);
         stage.sizeToScene();
         stage.show();
@@ -52,7 +65,7 @@ public class Main extends Application {
 
     public static void loadModifyCustomer(String file) throws IOException {
         Stage stage = new Stage();
-        Scene scene = new Scene(loadFXML(file), 424, 423);
+        Scene scene = new Scene(loadFXML(file), 424, 450);
         stage.setTitle("Modify Customer");
         stage.setScene(scene);
         stage.sizeToScene();
