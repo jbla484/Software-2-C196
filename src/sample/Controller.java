@@ -1,12 +1,11 @@
 package sample;
 
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
@@ -19,7 +18,6 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.SimpleTimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -67,13 +65,23 @@ public class Controller {
     @FXML
     public TextField customerIDText = new TextField();
     @FXML
+    public TextField customerIDText2 = new TextField();
+    @FXML
     public TextField customerNameText = new TextField();
+    @FXML
+    public TextField customerNameText2 = new TextField();
     @FXML
     public TextField customerAddressText = new TextField();
     @FXML
+    public TextField customerAddressText2 = new TextField();
+    @FXML
     public TextField customerPostalCodeText = new TextField();
     @FXML
+    public TextField customerPostalCodeText2 = new TextField();
+    @FXML
     public TextField customerPhoneNumberText = new TextField();
+    @FXML
+    public TextField customerPhoneNumberText2 = new TextField();
 
     // Labels
     @FXML
@@ -99,6 +107,8 @@ public class Controller {
 
     //Variables
     @FXML
+    public static boolean found = false;
+    @FXML
     public String userIDs = "";
     @FXML
     public String userPasswords = "";
@@ -122,6 +132,21 @@ public class Controller {
     public ObservableList<String> comboBoxValues1 = FXCollections.observableArrayList();
     @FXML
     public ObservableList<String> comboBoxValues2 = FXCollections.observableArrayList();
+    @FXML
+    public ObservableList<Customer> customers = FXCollections.observableArrayList();
+    @FXML
+    public static String copyCustomerID = "";
+    @FXML
+    public static String copyCustomerName = "";
+    @FXML
+    public static String copyCustomerAddress = "";
+    @FXML
+    public static String copyCustomerPostal = "";
+    @FXML
+    public static String copyCustomerPhone = "";
+    @FXML
+    public static String copyCustomerDivisionID = "";
+
 
     //ComboBoxes
     @FXML
@@ -131,6 +156,36 @@ public class Controller {
 
     @FXML
     public void initialize() throws SQLException {
+
+        if(found) {
+
+            customerIDText2.setText(copyCustomerID);
+            customerNameText2.setText(copyCustomerName);
+            customerAddressText2.setText(copyCustomerAddress);
+            customerPostalCodeText2.setText(copyCustomerPostal);
+            customerPhoneNumberText2.setText(copyCustomerPhone);
+
+            if (Integer.parseInt(copyCustomerDivisionID) <= 55) {
+                countryComboBox.getSelectionModel().select("United States");
+            } else if (Integer.parseInt(copyCustomerDivisionID) <= 75) {
+                countryComboBox.getSelectionModel().select("Canada");
+            } else {
+                countryComboBox.getSelectionModel().select("United Kingdom");
+            }
+
+            //FIXME MISSING FLD VALUES
+            String query = "SELECT * FROM first_level_divisions;";
+            Connection connection = JDBC.getConnection();
+            Statement statement = connection.createStatement();
+            ResultSet resultset = statement.executeQuery(query);
+
+            while (resultset.next()) {
+                if (resultset.getString(1).equals(copyCustomerDivisionID)) {
+                    fldComboBox.getSelectionModel().select(resultset.getString(2));
+                }
+            }
+
+        }
 
         // Sets Cell Value Factory for columns
         customerIDCol.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -167,7 +222,6 @@ public class Controller {
                 new SimpleIntegerProperty(cellData.getValue().getDivisionID()));
 
         // Populates the tables
-        ObservableList<Customer> customers = FXCollections.observableArrayList();
         String query = "SELECT * FROM customers";
         Connection connection = JDBC.getConnection();
         Statement statement = connection.createStatement();
@@ -423,6 +477,11 @@ public class Controller {
 
             statement.executeUpdate(query2);
 
+            int divisionIDString = Integer.parseInt(divisionID);
+            customers.add(new Customer(nextCustomerID, customerName, customerAddress, customerPostalCode, customerPhoneNumber, s, createdBy, s, createdBy, divisionIDString));
+            customerTable.setItems(customers);
+            customerTable.refresh();
+
             nextCustomerID++;
 
             //Once done, close
@@ -432,6 +491,32 @@ public class Controller {
             System.out.println(e.getMessage());
         }
 
+    }
+
+    @FXML
+    public void modifyCustomer() throws IOException {
+
+        customerTable.getSelectionModel().setCellSelectionEnabled(true);
+        customerTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+
+        Customer customer = customerTable.getSelectionModel().getSelectedItem();
+
+        for (Customer c : customers) {
+
+            if (c.getId() == customer.getId()) {
+                found = true;
+
+                copyCustomerID = String.valueOf(c.getId());
+                copyCustomerName = c.getName();
+                copyCustomerAddress = c.getAddress();
+                copyCustomerPostal = c.getPostalCode();
+                copyCustomerPhone = c.getPhoneNumber();
+                copyCustomerDivisionID = String.valueOf(c.getDivisionID());
+
+                switchToUpdateCustomer();
+                break;
+            }
+        }
     }
 
     @FXML

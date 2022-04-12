@@ -13,7 +13,7 @@
       <Label fx:id="errorDescription" layoutX="376.0" layoutY="235.0" prefHeight="17.0" prefWidth="209.0" style="-fx-alignment: center;" textFill="#ff1e1e" />
       <Line endX="62.0" layoutX="79.0" startX="62.0" startY="312.0" />
       <Hyperlink layoutX="27.0" layoutY="24.0" onAction="#switchToAddCustomer" text="Add Customer" textAlignment="CENTER" />
-      <Hyperlink layoutX="19.0" layoutY="76.0" onAction="#switchToUpdateCustomer" text="Modify Customer" />
+      <Hyperlink layoutX="19.0" layoutY="76.0" onAction="#modifyCustomer" text="Modify Customer" />
       <Hyperlink layoutX="17.0" layoutY="127.0" text="Add Appointment" />
       <Hyperlink layoutX="10.0" layoutY="178.0" text="Modify Appointment" />
       <Hyperlink layoutX="45.0" layoutY="224.0" text="Reports" />

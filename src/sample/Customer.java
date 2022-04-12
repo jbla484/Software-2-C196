@@ -15,6 +15,25 @@ public class Customer {
     private String customerLastUpdatedBy;
     private int customerDivisionID;
 
+    Customer() {
+
+    }
+
+    Customer(int customerID, String customerName, String customerAddress, String customerPostalCode,
+             String customerPhoneNumber, String customerCreationDate, String customerCreatedBy,
+             String customerLastUpdate, String customerLastUpdatedBy, int customerDivisionID) {
+        this.customerID = customerID;
+        this.customerName = customerName;
+        this.customerAddress = customerAddress;
+        this.customerPostalCode = customerPostalCode;
+        this.customerPhoneNumber = customerPhoneNumber;
+        this.customerCreationDate = customerCreationDate;
+        this.customerCreatedBy = customerCreatedBy;
+        this.customerLastUpdate = customerLastUpdate;
+        this.customerLastUpdatedBy = customerLastUpdatedBy;
+        this.customerDivisionID = customerDivisionID;
+    }
+
     public int getId() {
         return customerID;
     }
