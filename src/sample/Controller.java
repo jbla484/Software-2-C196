@@ -133,6 +133,10 @@ public class Controller {
     public DatePicker appointmentStartDate = new DatePicker();
     @FXML
     public DatePicker appointmentEndDate = new DatePicker();
+    @FXML
+    public TextField appointmentCustomerIDText = new TextField();
+    @FXML
+    public TextField appointmentUserIDText = new TextField();
 
     // Labels
     @FXML
@@ -229,6 +233,8 @@ public class Controller {
 
     @FXML
     public void initialize() throws SQLException {
+
+        //FIXME NEXT STEPS TODO: ADD APPOINTMENT TO DATABASE
 
         customerTable.refresh();
 
@@ -591,6 +597,75 @@ public class Controller {
             while (resultset2.next()) {
                 nextCustomerID++;
             }
+        }
+    }
+
+    @FXML
+    public void handleAddAppointmentButtonAction() {
+
+        try {
+
+            customerErrorLabel.setText("");
+
+            Stage stage = (Stage) addButton.getScene().getWindow();
+
+            //Get input values from TextFields into variables
+            String appointmentID = appointmentIDText.getText();
+            String appointmentTitle = appointmentTitleText.getText();
+            String appointmentDescription = appointmentDescriptionText.getText();
+            String appointmentLocation = appointmentLocationText.getText();
+            String appointmentType = appointmentTypeText.getText();
+            LocalDate startDate = appointmentStartDate.getValue();
+            LocalDate endDate = appointmentEndDate.getValue();
+
+            int customerID = Integer.parseInt(appointmentCustomerIDText.getText());
+            int userID = Integer.parseInt(appointmentUserIDText.getText());
+            int contactIndex = contactComboBox.getSelectionModel().getSelectedIndex() + 1;
+            int startTimeIndex = appointmentStartTimeComboBox.getSelectionModel().getSelectedIndex();
+            int endTimeIndex = appointmentEndTimeComboBox.getSelectionModel().getSelectedIndex();
+
+            String startTime = comboBoxValuesTime.get(startTimeIndex);
+            LocalTime localStartTime = LocalTime.parse(startTime);
+            String endTime = comboBoxValuesTime.get(endTimeIndex);
+            LocalTime localEndTime = LocalTime.parse(endTime);
+
+            LocalDateTime startDateTime = LocalDateTime.of(startDate, localStartTime);
+            startDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            Timestamp timestamp2 = Timestamp.valueOf(startDateTime);
+            String s2 = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(timestamp2);
+
+            LocalDateTime endDateTime = LocalDateTime.of(endDate, localEndTime);
+            endDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            Timestamp timestamp3 = Timestamp.valueOf(endDateTime);
+            String s3 = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(timestamp3);
+
+            LocalDate localDate = LocalDate.now();
+            LocalTime localTime = LocalTime.now();
+            LocalDateTime localDateTime = LocalDateTime.of(localDate, localTime);
+            localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            Timestamp timestamp = Timestamp.valueOf(localDateTime);
+            String creationDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(timestamp);
+
+            String createdBy = "James";
+
+            String query2 = "INSERT INTO appointments VALUES ('" + appointmentID + "', '" + appointmentTitle + "', '" +
+                    appointmentDescription + "', '" + appointmentLocation + "', '" + appointmentType + "', '" +
+                    s2 + "', '" + s3 + "', '" + creationDate + "', '" + createdBy + "', '" +
+                    creationDate + "', '" + createdBy + "', '" + customerID + "', '" + userID + "', '" + contactIndex + "');";
+
+            Connection connection = JDBC.getConnection();
+            Statement statement = connection.createStatement();
+            statement.executeUpdate(query2);
+
+            //Add appointment to list
+            appointments.add(new Appointment(Integer.parseInt(appointmentID), appointmentTitle, appointmentDescription, appointmentLocation, appointmentType, s2, s3, creationDate, createdBy, creationDate, createdBy, customerID, userID, contactIndex));
+            appointmentTable.setItems(appointments);
+            appointmentTable.refresh();
+
+            //Once done, close
+            stage.close();
+        }
+        catch (Exception e) {
         }
     }
 

@@ -28,15 +28,15 @@
       <ComboBox fx:id="contactComboBox" layoutX="208.0" layoutY="294.0" prefHeight="25.0" prefWidth="149.0" />
       <Label layoutX="71.0" layoutY="298.0" text="Contact:" />
       <Label layoutX="71.0" layoutY="340.0" text="Start Date:" />
-      <Button fx:id="addButton" layoutX="148.0" layoutY="527.0" mnemonicParsing="false" text="Add" />
+      <Button fx:id="addButton" layoutX="148.0" layoutY="527.0" mnemonicParsing="false" onAction="#handleAddAppointmentButtonAction" text="Add" />
       <Button fx:id="closeButton" layoutX="221.0" layoutY="527.0" mnemonicParsing="false" text="Cancel" />
       <Label fx:id="addCustomerErrorLabel" layoutX="126.0" layoutY="498.0" prefHeight="17.0" prefWidth="172.0" style="-fx-alignment: center;" textAlignment="CENTER" textFill="#ff1e1e" />
       <Label layoutX="71.0" layoutY="381.0" text="End Date:" />
       <DatePicker fx:id="appointmentStartDate" layoutX="133.0" layoutY="336.0" prefHeight="25.0" prefWidth="95.0" />
       <DatePicker fx:id="appointmentEndDate" layoutX="133.0" layoutY="377.0" prefHeight="25.0" prefWidth="95.0" />
       <Label layoutX="71.0" layoutY="422.0" text="Customer ID:" />
-      <TextField fx:id="appointmentTypeText1" layoutX="208.0" layoutY="418.0" />
-      <TextField fx:id="appointmentTypeText11" layoutX="208.0" layoutY="460.0" />
+      <TextField fx:id="appointmentCustomerIDText" layoutX="208.0" layoutY="418.0" />
+      <TextField fx:id="appointmentUserIDText" layoutX="208.0" layoutY="460.0" />
       <Label layoutX="71.0" layoutY="464.0" text="User ID:" />
       <Label layoutX="233.0" layoutY="340.0" text="Time:" />
       <Label layoutX="233.0" layoutY="381.0" text="Time:" />
