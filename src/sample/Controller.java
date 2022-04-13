@@ -5,7 +5,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
@@ -130,6 +129,10 @@ public class Controller {
     public TextField appointmentLocationText = new TextField();
     @FXML
     public TextField appointmentTypeText = new TextField();
+    @FXML
+    public DatePicker appointmentStartDate = new DatePicker();
+    @FXML
+    public DatePicker appointmentEndDate = new DatePicker();
 
     // Labels
     @FXML
@@ -187,6 +190,10 @@ public class Controller {
     @FXML
     public ObservableList<String> comboBoxValues2 = FXCollections.observableArrayList();
     @FXML
+    public ObservableList<String> comboBoxValuesContacts = FXCollections.observableArrayList();
+    @FXML
+    public ObservableList<String> comboBoxValuesTime = FXCollections.observableArrayList();
+    @FXML
     public static ObservableList<Customer> customers = FXCollections.observableArrayList();
     @FXML
     public static ObservableList<Appointment> appointments = FXCollections.observableArrayList();
@@ -213,11 +220,68 @@ public class Controller {
     public ComboBox<String> countryComboBox = new ComboBox<>();
     @FXML
     public ComboBox<String> fldComboBox = new ComboBox<>();
+    @FXML
+    public ComboBox<String> contactComboBox = new ComboBox<>();
+    @FXML
+    public ComboBox<String> appointmentStartTimeComboBox = new ComboBox<>();
+    @FXML
+    public ComboBox<String> appointmentEndTimeComboBox = new ComboBox<>();
 
     @FXML
     public void initialize() throws SQLException {
 
         customerTable.refresh();
+
+        comboBoxValuesTime.add("00:15:00"); comboBoxValuesTime.add("00:30:00");
+        comboBoxValuesTime.add("00:45:00"); comboBoxValuesTime.add("01:00:00");
+        comboBoxValuesTime.add("01:15:00"); comboBoxValuesTime.add("01:30:00");
+        comboBoxValuesTime.add("01:45:00"); comboBoxValuesTime.add("02:00:00");
+        comboBoxValuesTime.add("02:15:00"); comboBoxValuesTime.add("02:30:00");
+        comboBoxValuesTime.add("02:45:00"); comboBoxValuesTime.add("03:00:00");
+        comboBoxValuesTime.add("03:15:00"); comboBoxValuesTime.add("03:30:00");
+        comboBoxValuesTime.add("03:45:00"); comboBoxValuesTime.add("04:00:00");
+        comboBoxValuesTime.add("04:15:00"); comboBoxValuesTime.add("04:30:00");
+        comboBoxValuesTime.add("04:45:00"); comboBoxValuesTime.add("05:00:00");
+        comboBoxValuesTime.add("05:15:00"); comboBoxValuesTime.add("05:30:00");
+        comboBoxValuesTime.add("05:45:00"); comboBoxValuesTime.add("06:00:00");
+        comboBoxValuesTime.add("06:15:00"); comboBoxValuesTime.add("06:30:00");
+        comboBoxValuesTime.add("06:45:00"); comboBoxValuesTime.add("07:00:00");
+        comboBoxValuesTime.add("07:15:00"); comboBoxValuesTime.add("07:30:00");
+        comboBoxValuesTime.add("07:45:00"); comboBoxValuesTime.add("08:00:00");
+        comboBoxValuesTime.add("08:15:00"); comboBoxValuesTime.add("08:30:00");
+        comboBoxValuesTime.add("08:45:00"); comboBoxValuesTime.add("09:00:00");
+        comboBoxValuesTime.add("09:15:00"); comboBoxValuesTime.add("09:30:00");
+        comboBoxValuesTime.add("09:45:00"); comboBoxValuesTime.add("10:00:00");
+        comboBoxValuesTime.add("10:15:00"); comboBoxValuesTime.add("10:30:00");
+        comboBoxValuesTime.add("10:45:00"); comboBoxValuesTime.add("11:00:00");
+        comboBoxValuesTime.add("11:15:00"); comboBoxValuesTime.add("11:30:00");
+        comboBoxValuesTime.add("11:45:00"); comboBoxValuesTime.add("12:00:00");
+        comboBoxValuesTime.add("12:15:00"); comboBoxValuesTime.add("12:30:00");
+        comboBoxValuesTime.add("12:45:00"); comboBoxValuesTime.add("13:00:00");
+        comboBoxValuesTime.add("13:15:00"); comboBoxValuesTime.add("13:30:00");
+        comboBoxValuesTime.add("13:45:00"); comboBoxValuesTime.add("14:00:00");
+        comboBoxValuesTime.add("14:15:00"); comboBoxValuesTime.add("14:30:00");
+        comboBoxValuesTime.add("14:45:00"); comboBoxValuesTime.add("15:00:00");
+        comboBoxValuesTime.add("15:15:00"); comboBoxValuesTime.add("15:30:00");
+        comboBoxValuesTime.add("15:45:00"); comboBoxValuesTime.add("16:00:00");
+        comboBoxValuesTime.add("16:15:00"); comboBoxValuesTime.add("16:30:00");
+        comboBoxValuesTime.add("16:45:00"); comboBoxValuesTime.add("17:00:00");
+        comboBoxValuesTime.add("17:15:00"); comboBoxValuesTime.add("17:30:00");
+        comboBoxValuesTime.add("17:45:00"); comboBoxValuesTime.add("18:00:00");
+        comboBoxValuesTime.add("18:15:00"); comboBoxValuesTime.add("18:30:00");
+        comboBoxValuesTime.add("18:45:00"); comboBoxValuesTime.add("19:00:00");
+        comboBoxValuesTime.add("19:15:00"); comboBoxValuesTime.add("19:30:00");
+        comboBoxValuesTime.add("19:45:00"); comboBoxValuesTime.add("20:00:00");
+        comboBoxValuesTime.add("20:15:00"); comboBoxValuesTime.add("20:30:00");
+        comboBoxValuesTime.add("20:45:00"); comboBoxValuesTime.add("21:00:00");
+        comboBoxValuesTime.add("21:15:00"); comboBoxValuesTime.add("21:30:00");
+        comboBoxValuesTime.add("21:45:00"); comboBoxValuesTime.add("22:00:00");
+        comboBoxValuesTime.add("22:15:00"); comboBoxValuesTime.add("22:30:00");
+        comboBoxValuesTime.add("22:45:00"); comboBoxValuesTime.add("23:00:00");
+        comboBoxValuesTime.add("23:15:00"); comboBoxValuesTime.add("23:30:00");
+        comboBoxValuesTime.add("23:45:00"); comboBoxValuesTime.add("24:00:00");
+        appointmentStartTimeComboBox.setItems(comboBoxValuesTime);
+        appointmentEndTimeComboBox.setItems(comboBoxValuesTime);
 
         if(found) {
 
@@ -411,6 +475,19 @@ public class Controller {
         comboBoxValues.add("United Kingdom");
         comboBoxValues.add("United States");
         countryComboBox.setItems(comboBoxValues);
+
+        //Populate Contact ComboBox
+        String query = "Select Contact_ID, Contact_Name FROM contacts;";
+
+        Connection connection = JDBC.getConnection();
+        try (Statement statement = connection.createStatement();
+             ResultSet resultset = statement.executeQuery(query)) {
+
+            while (resultset.next()) {
+                comboBoxValuesContacts.add(resultset.getString(2));
+            }
+        }
+        contactComboBox.setItems(comboBoxValuesContacts);
 
         //Set action event for ComboBox
         countryComboBox.setOnAction(event -> {
@@ -689,7 +766,6 @@ public class Controller {
             String query2 = "UPDATE customers SET Customer_Name = '" + customerName + "', Address = '" + customerAddressText2.getText() + "', Postal_Code = '" + customerPostalCode + "', Phone = '" + customerPhoneNumber + "', Last_Update = '" + s + "', Division_ID = '" + customerFLD + "' WHERE Customer_ID = " + customerIDText2.getText() + ";";
             statement.executeUpdate(query2);
 
-            //FIXME NOT UPDATING CUSTOMERS OBSERVABLE LIST
             for (Customer c : customers) {
                 if (String.valueOf(c.getId()).equals(customerIDText2.getText())) {
                     customers.remove(c);
@@ -721,7 +797,7 @@ public class Controller {
     }
 
     @FXML
-    public void modifyCustomer() throws IOException {
+    public void modifyCustomer() {
 
         try {
             customerTable.getSelectionModel().setCellSelectionEnabled(true);
@@ -757,7 +833,7 @@ public class Controller {
     }
 
     @FXML
-    public void deleteCustomer() throws Exception {
+    public void deleteCustomer() {
 
         try {
 
