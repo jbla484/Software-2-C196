@@ -76,6 +76,19 @@ public class Main extends Application {
         stage.setMaxWidth(stage.getWidth());
     }
 
+    public static void loadModifyAppointment(String file) throws IOException {
+        Stage stage = new Stage();
+        Scene scene = new Scene(loadFXML(file), 424, 566);
+        stage.setTitle("Modify Appointment");
+        stage.setScene(scene);
+        stage.sizeToScene();
+        stage.show();
+        stage.setMinWidth(stage.getWidth());
+        stage.setMinHeight(stage.getHeight());
+        stage.setMaxHeight(stage.getHeight());
+        stage.setMaxWidth(stage.getWidth());
+    }
+
 
     public static void main(String[] args) {
         JDBC.makeConnection();

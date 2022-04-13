@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="566.0" prefWidth="424.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+   <children>
+      <Label layoutX="120.0" layoutY="29.0" text="Modify Appointment">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Label>
+      <Label layoutX="73.0" layoutY="92.0" text="Appointment ID:" />
+      <TextField fx:id="appointmentIDText2" disable="true" editable="false" layoutX="208.0" layoutY="88.0" />
+      <Label layoutX="72.0" layoutY="132.0" text="Title:" />
+      <TextField fx:id="appointmentTitleText2" layoutX="208.0" layoutY="128.0" />
+      <Label layoutX="71.0" layoutY="172.0" text="Description:" />
+      <Label layoutX="71.0" layoutY="214.0" text="Location:" />
+      <Label layoutX="71.0" layoutY="256.0" text="Type:" />
+      <TextField fx:id="appointmentDescriptionText2" layoutX="208.0" layoutY="168.0" />
+      <TextField fx:id="appointmentLocationText2" layoutX="208.0" layoutY="210.0" />
+      <TextField fx:id="appointmentTypeText2" layoutX="208.0" layoutY="252.0" prefHeight="25.0" prefWidth="149.0" />
+      <ComboBox fx:id="contactComboBox" layoutX="208.0" layoutY="294.0" prefHeight="25.0" prefWidth="149.0" />
+      <Label layoutX="71.0" layoutY="298.0" text="Contact:" />
+      <Label layoutX="71.0" layoutY="340.0" text="Start Date:" />
+      <Button fx:id="addButton" layoutX="148.0" layoutY="527.0" mnemonicParsing="false" text="Add" />
+      <Button fx:id="closeButton" layoutX="221.0" layoutY="527.0" mnemonicParsing="false" text="Cancel" />
+      <Label fx:id="addCustomerErrorLabel" layoutX="126.0" layoutY="498.0" prefHeight="17.0" prefWidth="172.0" style="-fx-alignment: center;" textAlignment="CENTER" textFill="#ff1e1e" />
+      <Label layoutX="71.0" layoutY="381.0" text="End Date:" />
+      <DatePicker fx:id="appointmentStartDate" layoutX="133.0" layoutY="336.0" prefHeight="25.0" prefWidth="95.0" />
+      <DatePicker fx:id="appointmentEndDate" layoutX="133.0" layoutY="377.0" prefHeight="25.0" prefWidth="95.0" />
+      <Label layoutX="71.0" layoutY="422.0" text="Customer ID:" />
+      <TextField fx:id="appointmentCustomerIDText2" layoutX="208.0" layoutY="418.0" />
+      <TextField fx:id="appointmentUserIDText2" layoutX="208.0" layoutY="460.0" />
+      <Label layoutX="71.0" layoutY="464.0" text="User ID:" />
+      <Label layoutX="233.0" layoutY="340.0" text="Time:" />
+      <Label layoutX="233.0" layoutY="381.0" text="Time:" />
+      <ComboBox fx:id="appointmentStartTimeComboBox" layoutX="268.0" layoutY="336.0" prefHeight="25.0" prefWidth="88.0" />
+      <ComboBox fx:id="appointmentEndTimeComboBox" layoutX="268.0" layoutY="377.0" prefHeight="25.0" prefWidth="88.0" />
+   </children>
+</Pane>

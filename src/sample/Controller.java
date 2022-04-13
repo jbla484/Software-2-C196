@@ -122,13 +122,23 @@ public class Controller {
     @FXML
     public TextField appointmentIDText = new TextField();
     @FXML
+    public TextField appointmentIDText2 = new TextField();
+    @FXML
     public TextField appointmentTitleText = new TextField();
+    @FXML
+    public TextField appointmentTitleText2 = new TextField();
     @FXML
     public TextField appointmentDescriptionText = new TextField();
     @FXML
+    public TextField appointmentDescriptionText2 = new TextField();
+    @FXML
     public TextField appointmentLocationText = new TextField();
     @FXML
+    public TextField appointmentLocationText2 = new TextField();
+    @FXML
     public TextField appointmentTypeText = new TextField();
+    @FXML
+    public TextField appointmentTypeText2 = new TextField();
     @FXML
     public DatePicker appointmentStartDate = new DatePicker();
     @FXML
@@ -136,7 +146,11 @@ public class Controller {
     @FXML
     public TextField appointmentCustomerIDText = new TextField();
     @FXML
+    public TextField appointmentCustomerIDText2 = new TextField();
+    @FXML
     public TextField appointmentUserIDText = new TextField();
+    @FXML
+    public TextField appointmentUserIDText2 = new TextField();
 
     // Labels
     @FXML
@@ -162,11 +176,15 @@ public class Controller {
     @FXML
     public Label customerErrorLabel = new Label();
     @FXML
+    public Label appointmentErrorLabel = new Label();
+    @FXML
     public Label addCustomerErrorLabel = new Label();
 
     //Variables
     @FXML
     public static boolean found = false;
+    @FXML
+    public static boolean found2 = false;
     @FXML
     public String userIDs = "";
     @FXML
@@ -218,6 +236,29 @@ public class Controller {
     @FXML
     public static int first = 0;
 
+    @FXML
+    public static String copyAppointmentID = "";
+    @FXML
+    public static String copyAppointmentTitle = "";
+    @FXML
+    public static String copyAppointmentDescription = "";
+    @FXML
+    public static String copyAppointmentLocation = "";
+    @FXML
+    public static String copyAppointmentContact = "";
+    @FXML
+    public static String copyAppointmentType = "";
+    @FXML
+    public static String copyAppointmentStartDate = "";
+    @FXML
+    public static String copyAppointmentEndDate = "";
+    @FXML
+    public static String copyAppointmentCustomerID = "";
+    @FXML
+    public static String copyAppointmentUserID = "";
+    @FXML
+    public static String copyAppointmentContactID = "";
+
 
     //ComboBoxes
     @FXML
@@ -233,8 +274,6 @@ public class Controller {
 
     @FXML
     public void initialize() throws SQLException {
-
-        //FIXME NEXT STEPS TODO: ADD APPOINTMENT TO DATABASE
 
         customerTable.refresh();
 
@@ -305,7 +344,6 @@ public class Controller {
                 countryComboBox.getSelectionModel().select("United Kingdom");
             }
 
-            //FIXME MISSING FLD VALUES
             String query = "SELECT * FROM first_level_divisions;";
             Connection connection = JDBC.getConnection();
             Statement statement = connection.createStatement();
@@ -316,9 +354,31 @@ public class Controller {
                     fldComboBox.getSelectionModel().select(resultset.getString(2));
                 }
             }
-
         }
         found = false;
+
+        if(found2) {
+
+            appointmentIDText2.setText(copyAppointmentID);
+            appointmentTitleText2.setText(copyAppointmentTitle);
+            appointmentDescriptionText2.setText(copyAppointmentDescription);
+            appointmentLocationText2.setText(copyAppointmentLocation);
+            appointmentTypeText2.setText(copyAppointmentType);
+            appointmentCustomerIDText2.setText(copyAppointmentCustomerID);
+            appointmentUserIDText2.setText(copyAppointmentUserID);
+
+            if (Integer.parseInt(copyAppointmentContactID) == 1) {
+                contactComboBox.getSelectionModel().select("Anika Costa");
+            }
+            if (Integer.parseInt(copyAppointmentContactID) == 2) {
+                contactComboBox.getSelectionModel().select("Daniel Garcia");
+            }
+            if (Integer.parseInt(copyAppointmentContactID) == 3) {
+                contactComboBox.getSelectionModel().select("Li Lee");
+            }
+
+        }
+        found2 = false;
 
         // Sets Cell Value Factory for columns
         customerIDCol.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -605,7 +665,7 @@ public class Controller {
 
         try {
 
-            customerErrorLabel.setText("");
+            appointmentErrorLabel.setText("");
 
             Stage stage = (Stage) addButton.getScene().getWindow();
 
@@ -903,7 +963,53 @@ public class Controller {
             }
             customerTable.refresh();
         } catch (Exception e) {
-            customerErrorLabel.setText("Please select a customer to be modified.");
+            customerErrorLabel.setText("Select a customer to be modified.");
+        }
+    }
+
+    @FXML
+    public void modifyAppointment() {
+
+        //FIXME WORK ON MODIFYING AN APPOINTMENT UNKNOWN BUG
+
+        try {
+
+            appointmentTable.getSelectionModel().setCellSelectionEnabled(true);
+            appointmentTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+
+            if (appointmentTable.getSelectionModel().getSelectedItem() == null) {
+                throw new Exception();
+            }
+
+            appointmentErrorLabel.setText("");
+            Appointment appointment = appointmentTable.getSelectionModel().getSelectedItem();
+
+            for (Appointment a : appointments) {
+
+                if (a.getID() == appointment.getID()) {
+
+                    found2 = true;
+
+                    copyAppointmentID = String.valueOf(appointment.getID());
+                    copyAppointmentTitle = appointment.getTitle();
+                    copyAppointmentDescription = appointment.getDescription();
+                    copyAppointmentLocation = appointment.getLocation();
+                    copyAppointmentType = appointment.getType();
+                    copyAppointmentStartDate = appointment.getStart();
+                    copyAppointmentEndDate = appointment.getEnd();
+                    copyAppointmentCustomerID = String.valueOf(appointment.getCustomerID());
+                    copyAppointmentUserID = String.valueOf(appointment.getUserID());
+                    copyAppointmentContactID = String.valueOf(appointment.getContactID());
+
+                    //FIXME THIS IS THE PROBLEM
+                    switchToUpdateAppointment();
+                    break;
+                }
+            }
+            appointmentTable.refresh();
+        } catch (Exception e) {
+            e.printStackTrace();
+            appointmentErrorLabel.setText("Select an appointment to be modified.");
         }
     }
 
@@ -936,10 +1042,46 @@ public class Controller {
                     break;
                 }
             }
-            customerErrorLabel.setText("Customer has been successfully deleted.");
+            customerErrorLabel.setText("Customer successfully deleted.");
             customerTable.refresh();
         } catch (Exception e) {
-            customerErrorLabel.setText("Please select a customer to be deleted.");
+            customerErrorLabel.setText("Select a customer to be deleted.");
+        }
+    }
+
+    @FXML
+    public void deleteAppointment() {
+
+        try {
+
+            appointmentTable.getSelectionModel().setCellSelectionEnabled(true);
+            appointmentTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+
+            if (appointmentTable.getSelectionModel().getSelectedItem() == null) {
+                throw new Exception();
+            }
+
+            appointmentErrorLabel.setText("");
+            Appointment appointment = appointmentTable.getSelectionModel().getSelectedItem();
+
+            for (Appointment a : appointments) {
+
+                if (a.getID() == appointment.getID()) {
+
+                    String query = "DELETE FROM appointments WHERE Appointment_ID = " + appointment.getID() + ";";
+
+                    Connection connection = JDBC.getConnection();
+                    Statement statement = connection.createStatement();
+                    statement.executeUpdate(query);
+
+                    appointments.remove(a);
+                    break;
+                }
+            }
+            appointmentErrorLabel.setText("Appointment successfully deleted.");
+            appointmentTable.refresh();
+        } catch (Exception e) {
+            appointmentErrorLabel.setText("Select an appointment to be deleted.");
         }
     }
 
@@ -986,7 +1128,7 @@ public class Controller {
 
     @FXML
     private void switchToAddAppointment() throws IOException, SQLException {
-        customerErrorLabel.setText("");
+        appointmentErrorLabel.setText("");
 
         //Find next Customer ID
         String query3 = "SELECT Appointment_ID FROM appointments;";
@@ -1014,5 +1156,11 @@ public class Controller {
     private void switchToUpdateCustomer() throws IOException {
         String fileName = "updateCustomer";
         Main.loadModifyCustomer(fileName);
+    }
+
+    @FXML
+    private void switchToUpdateAppointment() throws IOException {
+        String fileName = "updateAppointment";
+        Main.loadModifyAppointment(fileName);
     }
 }
