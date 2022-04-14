@@ -1,9 +1,14 @@
 package sample;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 public class Customer {
+    public ObservableList<Appointment> appointmentList = FXCollections.observableArrayList();
     private int customerID;
     private String customerName;
     private String customerAddress;
@@ -112,5 +117,13 @@ public class Customer {
 
     public void setDivisionID(int customerDivisionID) {
         this.customerDivisionID = customerDivisionID;
+    }
+
+    public void addAppointment(Appointment a) {
+        appointmentList.add(a);
+    }
+
+    public ObservableList<Appointment> getAppointments() {
+        return appointmentList;
     }
 }

@@ -28,7 +28,7 @@
       <ComboBox fx:id="contactComboBox" layoutX="208.0" layoutY="294.0" prefHeight="25.0" prefWidth="149.0" />
       <Label layoutX="71.0" layoutY="298.0" text="Contact:" />
       <Label layoutX="71.0" layoutY="340.0" text="Start Date:" />
-      <Button fx:id="addButton" layoutX="148.0" layoutY="527.0" mnemonicParsing="false" text="Add" />
+      <Button fx:id="addButton" layoutX="148.0" layoutY="527.0" mnemonicParsing="false" onAction="#handleModifyAddAppointmentButtonAction" text="Add" />
       <Button fx:id="closeButton" layoutX="221.0" layoutY="527.0" mnemonicParsing="false" text="Cancel" />
       <Label fx:id="addCustomerErrorLabel" layoutX="126.0" layoutY="498.0" prefHeight="17.0" prefWidth="172.0" style="-fx-alignment: center;" textAlignment="CENTER" textFill="#ff1e1e" />
       <Label layoutX="71.0" layoutY="381.0" text="End Date:" />

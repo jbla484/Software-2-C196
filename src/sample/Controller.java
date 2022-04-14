@@ -27,6 +27,10 @@ public class Controller {
     public TableView<Customer> customerTable = new TableView<>();
     @FXML
     public TableView<Appointment> appointmentTable = new TableView<>();
+    @FXML
+    public TableView<Appointment> appointmentTable2 = new TableView<>();
+    @FXML
+    public TableView<Appointment> associatedAppointmentTable = new TableView<>();
 
 
     // Customer TableColumns
@@ -80,6 +84,35 @@ public class Controller {
     public TableColumn<Appointment, Number> appointmentUserIDCol = new TableColumn<>("User ID");
     @FXML
     public TableColumn<Appointment, Number> appointmentContactIDCol = new TableColumn<>("Contact ID");
+
+    @FXML
+    public TableColumn<Appointment, Number> appointmentIDCol1 = new TableColumn<>("Appointment ID");
+    @FXML
+    public TableColumn<Appointment, String> appointmentTitleCol1 = new TableColumn<>("Title");
+    @FXML
+    public TableColumn<Appointment, String> appointmentDescriptionCol1 = new TableColumn<>("Description");
+    @FXML
+    public TableColumn<Appointment, String> appointmentLocationCol1 = new TableColumn<>("Location");
+    @FXML
+    public TableColumn<Appointment, String> appointmentTypeCol1 = new TableColumn<>("Type");
+    @FXML
+    public TableColumn<Appointment, String> appointmentStartCol1 = new TableColumn<>("Start");
+    @FXML
+    public TableColumn<Appointment, String> appointmentEndCol1 = new TableColumn<>("End");
+    @FXML
+    public TableColumn<Appointment, String> appointmentCreationCol1 = new TableColumn<>("Creation Date");
+    @FXML
+    public TableColumn<Appointment, String> appointmentCreatedByCol1 = new TableColumn<>("Created By");
+    @FXML
+    public TableColumn<Appointment, String> appointmentUpdatedCol1 = new TableColumn<>("Last Update");
+    @FXML
+    public TableColumn<Appointment, String> appointmentUpdatedByCol1 = new TableColumn<>("Updated By");
+    @FXML
+    public TableColumn<Appointment, Number> appointmentCustomerIDCol1 = new TableColumn<>("Customer ID");
+    @FXML
+    public TableColumn<Appointment, Number> appointmentUserIDCol1 = new TableColumn<>("User ID");
+    @FXML
+    public TableColumn<Appointment, Number> appointmentContactIDCol1 = new TableColumn<>("Contact ID");
 
 
     //Buttons
@@ -186,6 +219,8 @@ public class Controller {
     @FXML
     public static boolean found2 = false;
     @FXML
+    public static boolean found3 = false;
+    @FXML
     public String userIDs = "";
     @FXML
     public String userPasswords = "";
@@ -219,6 +254,10 @@ public class Controller {
     public static ObservableList<Customer> customers = FXCollections.observableArrayList();
     @FXML
     public static ObservableList<Appointment> appointments = FXCollections.observableArrayList();
+    @FXML
+    public ObservableList<Appointment> associatedAppointments = FXCollections.observableArrayList();
+    @FXML
+    public static ObservableList<Appointment> associatedAppointments2 = FXCollections.observableArrayList();
     @FXML
     public static String copyCustomerID = "";
     @FXML
@@ -274,6 +313,12 @@ public class Controller {
 
     @FXML
     public void initialize() throws SQLException {
+
+        if (found3) {
+            associatedAppointmentTable.setItems(associatedAppointments2);
+            associatedAppointmentTable.refresh();
+            found3 = false;
+        }
 
         customerTable.refresh();
 
@@ -377,6 +422,18 @@ public class Controller {
                 contactComboBox.getSelectionModel().select("Li Lee");
             }
 
+            //Start date and time
+            String[] startDateAndTime = copyAppointmentStartDate.split("(\\s)", 2);
+            LocalDate localDate = LocalDate.parse(startDateAndTime[0]);
+            appointmentStartDate.setValue(localDate);
+            appointmentStartTimeComboBox.getSelectionModel().select(startDateAndTime[1]);
+
+            //End date and time
+            String[] endDateAndTime = copyAppointmentEndDate.split("(\\s)", 2);
+            localDate = LocalDate.parse(endDateAndTime[0]);
+            appointmentEndDate.setValue(localDate);
+            appointmentEndTimeComboBox.getSelectionModel().select(endDateAndTime[1]);
+
         }
         found2 = false;
 
@@ -406,6 +463,21 @@ public class Controller {
         appointmentCustomerIDCol.setCellValueFactory(new PropertyValueFactory<>("customer id"));
         appointmentUserIDCol.setCellValueFactory(new PropertyValueFactory<>("user id"));
         appointmentContactIDCol.setCellValueFactory(new PropertyValueFactory<>("contact id"));
+
+        appointmentIDCol1.setCellValueFactory(new PropertyValueFactory<>("id"));
+        appointmentTitleCol1.setCellValueFactory(new PropertyValueFactory<>("title"));
+        appointmentDescriptionCol1.setCellValueFactory(new PropertyValueFactory<>("description"));
+        appointmentLocationCol1.setCellValueFactory(new PropertyValueFactory<>("location"));
+        appointmentTypeCol1.setCellValueFactory(new PropertyValueFactory<>("type"));
+        appointmentStartCol1.setCellValueFactory(new PropertyValueFactory<>("start"));
+        appointmentEndCol1.setCellValueFactory(new PropertyValueFactory<>("end"));
+        appointmentCreationCol1.setCellValueFactory(new PropertyValueFactory<>("creation date"));
+        appointmentCreatedByCol1.setCellValueFactory(new PropertyValueFactory<>("created by"));
+        appointmentUpdatedCol1.setCellValueFactory(new PropertyValueFactory<>("updated"));
+        appointmentUpdatedByCol1.setCellValueFactory(new PropertyValueFactory<>("updated by"));
+        appointmentCustomerIDCol1.setCellValueFactory(new PropertyValueFactory<>("customer id"));
+        appointmentUserIDCol1.setCellValueFactory(new PropertyValueFactory<>("user id"));
+        appointmentContactIDCol1.setCellValueFactory(new PropertyValueFactory<>("contact id"));
 
         // Sets Cell Value Factory for cells
         customerIDCol.setCellValueFactory(cellData ->
@@ -458,6 +530,35 @@ public class Controller {
         appointmentContactIDCol.setCellValueFactory(cellData ->
                 new SimpleIntegerProperty(cellData.getValue().getContactID()));
 
+        appointmentIDCol1.setCellValueFactory(cellData ->
+                new SimpleIntegerProperty(cellData.getValue().getID()));
+        appointmentTitleCol1.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getTitle()));
+        appointmentDescriptionCol1.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getDescription()));
+        appointmentLocationCol1.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getLocation()));
+        appointmentTypeCol1.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getType()));
+        appointmentStartCol1.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getStart()));
+        appointmentEndCol1.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getEnd()));
+        appointmentCreationCol1.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getCreation()));
+        appointmentCreatedByCol1.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getCreatedBy()));
+        appointmentUpdatedCol1.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getUpdated()));
+        appointmentUpdatedByCol1.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getUpdatedBy()));
+        appointmentCustomerIDCol1.setCellValueFactory(cellData ->
+                new SimpleIntegerProperty(cellData.getValue().getCustomerID()));
+        appointmentUserIDCol1.setCellValueFactory(cellData ->
+                new SimpleIntegerProperty(cellData.getValue().getUserID()));
+        appointmentContactIDCol1.setCellValueFactory(cellData ->
+                new SimpleIntegerProperty(cellData.getValue().getContactID()));
+
 
         if (first == 1) {
             // Populates the tables
@@ -485,6 +586,7 @@ public class Controller {
             // Populates the tables
             String query2 = "SELECT * FROM appointments";
             ResultSet resultset2 = statement.executeQuery(query2);
+            appointments.clear();
 
             while (resultset2.next()) {
                 Appointment appointment = new Appointment();
@@ -505,6 +607,36 @@ public class Controller {
                 appointments.add(appointment);
             }
             appointmentTable.setItems(appointments);
+            appointmentTable2.setItems(appointments);
+        }
+        if (first >= 2) {
+            Connection connection = JDBC.getConnection();
+            Statement statement = connection.createStatement();
+            // Populates the tables
+            String query2 = "SELECT * FROM appointments";
+            ResultSet resultset2 = statement.executeQuery(query2);
+            appointments.clear();
+
+            while (resultset2.next()) {
+                Appointment appointment = new Appointment();
+                appointment.setID(resultset2.getInt(1));
+                appointment.setTitle(resultset2.getString(2));
+                appointment.setDescription(resultset2.getString(3));
+                appointment.setLocation(resultset2.getString(4));
+                appointment.setType(resultset2.getString(5));
+                appointment.setStart(resultset2.getString(6));
+                appointment.setEnd(resultset2.getString(7));
+                appointment.setCreation(resultset2.getString(8));
+                appointment.setCreatedBy(resultset2.getString(9));
+                appointment.setUpdated(resultset2.getString(10));
+                appointment.setUpdatedBy(resultset2.getString(11));
+                appointment.setCustomerID(Integer.parseInt(resultset2.getString(12)));
+                appointment.setUserID(Integer.parseInt(resultset2.getString(13)));
+                appointment.setContactID(Integer.parseInt(resultset2.getString(14)));
+                appointments.add(appointment);
+            }
+            appointmentTable.setItems(appointments);
+            appointmentTable2.setItems(appointments);
         }
         first++;
 
@@ -721,6 +853,8 @@ public class Controller {
             appointments.add(new Appointment(Integer.parseInt(appointmentID), appointmentTitle, appointmentDescription, appointmentLocation, appointmentType, s2, s3, creationDate, createdBy, creationDate, createdBy, customerID, userID, contactIndex));
             appointmentTable.setItems(appointments);
             appointmentTable.refresh();
+            appointmentTable2.setItems(appointments);
+            appointmentTable2.refresh();
 
             //Once done, close
             stage.close();
@@ -828,9 +962,15 @@ public class Controller {
             statement.executeUpdate(query2);
 
             int divisionIDString = Integer.parseInt(divisionID);
-            customers.add(new Customer(nextCustomerID, customerName, customerAddress, customerPostalCode, customerPhoneNumber, s, createdBy, s, createdBy, divisionIDString));
+            Customer c = new Customer(nextCustomerID, customerName, customerAddress, customerPostalCode, customerPhoneNumber, s, createdBy, s, createdBy, divisionIDString);
+            customers.add(c);
             customerTable.setItems(customers);
             customerTable.refresh();
+
+            associatedAppointments = associatedAppointmentTable.getItems();
+            for (Appointment a : associatedAppointments) {
+                c.addAppointment(a);
+            }
 
             nextCustomerID++;
 
@@ -901,8 +1041,10 @@ public class Controller {
             String query2 = "UPDATE customers SET Customer_Name = '" + customerName + "', Address = '" + customerAddressText2.getText() + "', Postal_Code = '" + customerPostalCode + "', Phone = '" + customerPhoneNumber + "', Last_Update = '" + s + "', Division_ID = '" + customerFLD + "' WHERE Customer_ID = " + customerIDText2.getText() + ";";
             statement.executeUpdate(query2);
 
+            //FIXME NOT CORRECTLY UPDATING ASSOCIATED APPOINTMENT TABLE
             for (Customer c : customers) {
                 if (String.valueOf(c.getId()).equals(customerIDText2.getText())) {
+                    ObservableList<Appointment> list = c.getAppointments();
                     customers.remove(c);
                     c.setName(customerName);
                     c.setAddress(customerAddressText2.getText());
@@ -910,6 +1052,12 @@ public class Controller {
                     c.setPhoneNumber(customerPhoneNumber);
                     c.setLastUpdate(s);
                     c.setDivisionID(Integer.parseInt(customerFLD));
+                    for (Appointment a : list) {
+                        c.addAppointment(a);
+                    }
+                    for (Appointment a : associatedAppointments) {
+                        c.addAppointment(a);
+                    }
                     customers.add(c);
                     break;
                 }
@@ -935,6 +1083,7 @@ public class Controller {
     public void modifyCustomer() {
 
         try {
+
             customerTable.getSelectionModel().setCellSelectionEnabled(true);
             customerTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
@@ -949,6 +1098,7 @@ public class Controller {
 
                 if (c.getId() == customer.getId()) {
                     found = true;
+                    found3 = true;
 
                     copyCustomerID = String.valueOf(c.getId());
                     copyCustomerName = c.getName();
@@ -956,6 +1106,7 @@ public class Controller {
                     copyCustomerPostal = c.getPostalCode();
                     copyCustomerPhone = c.getPhoneNumber();
                     copyCustomerDivisionID = String.valueOf(c.getDivisionID());
+                    associatedAppointments2 = c.getAppointments();
 
                     switchToUpdateCustomer();
                     break;
@@ -968,9 +1119,90 @@ public class Controller {
     }
 
     @FXML
-    public void modifyAppointment() {
+    public void handleModifyAddAppointmentButtonAction() {
 
-        //FIXME WORK ON MODIFYING AN APPOINTMENT UNKNOWN BUG
+        try {
+
+            appointmentErrorLabel.setText("");
+
+            Stage stage = (Stage) addButton.getScene().getWindow();
+
+            //Get input values from TextFields into variables
+            String appointmentID = appointmentIDText2.getText();
+            String appointmentTitle = appointmentTitleText2.getText();
+            String appointmentDescription = appointmentDescriptionText2.getText();
+            String appointmentLocation = appointmentLocationText2.getText();
+            String appointmentType = appointmentTypeText2.getText();
+            LocalDate appointmentStartDates = appointmentStartDate.getValue();
+            LocalDate appointmentEndDates = appointmentEndDate.getValue();
+            String appointmentCustomerID = appointmentCustomerIDText2.getText();
+            String appointmentUserID = appointmentUserIDText2.getText();
+
+            String appointmentStartTime = appointmentStartTimeComboBox.getValue();
+            String appointmentEndTime = appointmentEndTimeComboBox.getValue();
+            String appointmentStartTimeAndDate = appointmentStartDates.toString() + " " + appointmentStartTime;
+            String appointmentEndTimeAndDate = appointmentEndDates.toString() + " " + appointmentEndTime;
+            int contactID = contactComboBox.getSelectionModel().getSelectedIndex() + 1;
+
+            //Create a query and execute it.
+            LocalDate localDate = LocalDate.now();
+            LocalTime localTime = LocalTime.now();
+            LocalDateTime localDateTime = LocalDateTime.of(localDate, localTime);
+            localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            Timestamp timestamp = Timestamp.valueOf(localDateTime);
+            String s = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(timestamp);
+
+            String query = "UPDATE appointments SET Title = '" + appointmentTitle + "', Description = '" + appointmentDescription + "', Location = '" + appointmentLocation + "', Type = '" + appointmentType + "', Start = '" + appointmentStartTimeAndDate + "', End = '" + appointmentEndTimeAndDate + "', Last_Update = '" + s + "', Customer_ID = '" + appointmentCustomerID + "', User_ID = '" + appointmentUserID + "', Contact_ID = '" + contactID + "' WHERE Appointment_ID = " + appointmentUserIDText2.getText() + ";";
+
+            Connection connection = JDBC.getConnection();
+            Statement statement = connection.createStatement();
+            statement.executeUpdate(query);
+
+            for (Appointment a : appointments) {
+                if (String.valueOf(a.getID()).equals(appointmentIDText2.getText())) {
+                    String creation = a.getCreation();
+                    String createdBy = a.getCreatedBy();
+                    String updatedBy = a.getUpdatedBy();
+                    appointments.remove(a);
+                    a.setTitle(appointmentTitle);
+                    a.setDescription(appointmentDescription);
+                    a.setLocation(appointmentLocation);
+                    a.setType(appointmentType);
+                    a.setStart(appointmentStartTimeAndDate);
+                    a.setEnd(appointmentEndTimeAndDate);
+                    a.setCreation(creation);
+                    a.setCreatedBy(createdBy);
+                    a.setUpdated(s);
+                    a.setUpdatedBy(updatedBy);
+                    a.setCustomerID(Integer.parseInt(appointmentCustomerID));
+                    a.setUserID(Integer.parseInt(appointmentUserID));
+                    a.setContactID(contactID);
+                    appointments.add(a);
+                    break;
+                }
+            }
+
+            appointmentTable.setItems(appointments);
+            appointmentTable.refresh();
+            appointmentTable2.setItems(appointments);
+            appointmentTable2.refresh();
+
+            //Once done, close
+            stage.close();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            if (customerNameText2.getText().equals("") || customerAddressText2.getText().equals("") || customerPostalCodeText2.getText().equals("") || customerPhoneNumberText2.getText().equals("") || countryComboBox.getSelectionModel().getSelectedIndex() < 0 || fldComboBox.getSelectionModel().getSelectedIndex() < 0) {
+                addCustomerErrorLabel.setText("Missing input values.");
+            } else {
+                addCustomerErrorLabel.setText("Wrong address format.");
+            }
+        }
+
+    }
+
+    @FXML
+    public void modifyAppointment() {
 
         try {
 
@@ -1001,15 +1233,43 @@ public class Controller {
                     copyAppointmentUserID = String.valueOf(appointment.getUserID());
                     copyAppointmentContactID = String.valueOf(appointment.getContactID());
 
-                    //FIXME THIS IS THE PROBLEM
                     switchToUpdateAppointment();
                     break;
                 }
             }
             appointmentTable.refresh();
+            appointmentTable2.refresh();
         } catch (Exception e) {
             e.printStackTrace();
             appointmentErrorLabel.setText("Select an appointment to be modified.");
+        }
+    }
+
+    @FXML
+    private void addAppointment() {
+
+        try {
+
+            appointmentTable2.getSelectionModel().setCellSelectionEnabled(true);
+            appointmentTable2.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+
+            if (appointmentTable2.getSelectionModel().getSelectedItem() == null) {
+                throw new Exception();
+            }
+
+            customerErrorLabel.setText("");
+            //FIXME HERE Glitch after addiong twice
+            Appointment appointment = appointmentTable2.getSelectionModel().getSelectedItem();
+            for (Appointment a : associatedAppointments2) {
+                associatedAppointments.add(a);
+            }
+            associatedAppointments.add(appointment);
+            associatedAppointmentTable.setItems(associatedAppointments);
+            associatedAppointmentTable.refresh();
+
+            customerErrorLabel.setText("Appointment successfully added.");
+        } catch (Exception e) {
+            customerErrorLabel.setText("Select an appointment to be added.");
         }
     }
 
@@ -1050,6 +1310,28 @@ public class Controller {
     }
 
     @FXML
+    private void removeAssociatedAppointment() {
+        try {
+
+            associatedAppointmentTable.getSelectionModel().setCellSelectionEnabled(true);
+            associatedAppointmentTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+
+            if (associatedAppointmentTable.getSelectionModel().getSelectedItem() == null) {
+                throw new Exception();
+            }
+
+            appointmentErrorLabel.setText("");
+            Appointment appointment = associatedAppointmentTable.getSelectionModel().getSelectedItem();
+
+            associatedAppointments.remove(appointment);
+            appointmentErrorLabel.setText("Appointment successfully removed.");
+            associatedAppointmentTable.refresh();
+        } catch (Exception e) {
+            appointmentErrorLabel.setText("Select an appointment to be removed.");
+        }
+    }
+
+    @FXML
     public void deleteAppointment() {
 
         try {
@@ -1080,6 +1362,7 @@ public class Controller {
             }
             appointmentErrorLabel.setText("Appointment successfully deleted.");
             appointmentTable.refresh();
+            appointmentTable2.refresh();
         } catch (Exception e) {
             appointmentErrorLabel.setText("Select an appointment to be deleted.");
         }
