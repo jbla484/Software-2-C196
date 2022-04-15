@@ -978,6 +978,191 @@ public class Controller {
     }
 
     @FXML
+    public void handleModifyAddAppointmentButtonAction() {
+
+        try {
+
+            appointmentErrorLabel.setText("");
+
+            Stage stage = (Stage) addButton.getScene().getWindow();
+
+            //Get input values from TextFields into variables
+            String appointmentID = appointmentIDText2.getText();
+            String appointmentTitle = appointmentTitleText2.getText();
+            String appointmentDescription = appointmentDescriptionText2.getText();
+            String appointmentLocation = appointmentLocationText2.getText();
+            String appointmentType = appointmentTypeText2.getText();
+            LocalDate appointmentStartDates = appointmentStartDate.getValue();
+            LocalDate appointmentEndDates = appointmentEndDate.getValue();
+            String appointmentCustomerID = appointmentCustomerIDText2.getText();
+            String appointmentUserID = appointmentUserIDText2.getText();
+
+            String appointmentStartTime = appointmentStartTimeComboBox.getValue();
+
+            String[] parts = appointmentStartTime.split("\\D");
+            LocalTime lt = LocalTime.of(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]));
+            LocalDate ld = appointmentStartDates;
+            LocalDateTime ldt = LocalDateTime.of(ld, lt);
+            ZonedDateTime zdt = ZonedDateTime.of(ldt, zoneId);
+            ZonedDateTime utcZonedLocal7 = ZonedDateTime.ofInstant(zdt.toInstant(), estId);
+
+            if (utcZonedLocal7.toLocalTime().isBefore(LocalTime.of(8, 0)) || utcZonedLocal7.toLocalTime().isAfter(LocalTime.of(22, 0))) {
+                throw new Exception();
+            }
+
+            String appointmentEndTime = appointmentEndTimeComboBox.getValue();
+
+            parts = appointmentEndTime.split("\\D");
+            lt = LocalTime.of(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]));
+            ld = appointmentEndDates;
+            ldt = LocalDateTime.of(ld, lt);
+            zdt = ZonedDateTime.of(ldt, zoneId);
+            utcZonedLocal7 = ZonedDateTime.ofInstant(zdt.toInstant(), estId);
+
+            if (utcZonedLocal7.toLocalTime().isBefore(LocalTime.of(8, 0)) || utcZonedLocal7.toLocalTime().isAfter(LocalTime.of(22, 0))) {
+                throw new Exception();
+            }
+
+            String appointmentStartTimeAndDate = appointmentStartDates.toString() + " " + appointmentStartTime;
+            String appointmentEndTimeAndDate = appointmentEndDates.toString() + " " + appointmentEndTime;
+            int contactID = contactComboBox.getSelectionModel().getSelectedIndex() + 1;
+
+            //Create a query and execute it.
+            LocalDate localDate = LocalDate.now();
+            LocalTime localTime = LocalTime.now();
+            LocalDateTime localDateTime = LocalDateTime.of(localDate, localTime);
+            ZonedDateTime zonedLocalDateTime = ZonedDateTime.of(localDateTime, zoneId);
+            ZonedDateTime utcZonedLocal = ZonedDateTime.ofInstant(zonedLocalDateTime.toInstant(), utcId);
+            String now = utcZonedLocal.toLocalDate() + " " + utcZonedLocal.toLocalTime();
+            ZonedDateTime utcZonedLocal2 = ZonedDateTime.ofInstant(utcZonedLocal.toInstant(), zoneId);
+            String nowLocal = utcZonedLocal2.toLocalDate() + " " + utcZonedLocal2.toLocalTime();
+
+            String query = "UPDATE appointments SET Title = '" + appointmentTitle + "', Description = '" + appointmentDescription + "', Location = '" + appointmentLocation + "', Type = '" + appointmentType + "', Start = '" + appointmentStartTimeAndDate + "', End = '" + appointmentEndTimeAndDate + "', Last_Update = '" + now + "', Customer_ID = '" + appointmentCustomerID + "', User_ID = '" + appointmentUserID + "', Contact_ID = '" + contactID + "' WHERE Appointment_ID = " + appointmentIDText2.getText() + ";";
+
+            Connection connection = JDBC.getConnection();
+            Statement statement = connection.createStatement();
+            statement.executeUpdate(query);
+
+            for (Appointment a : appointments) {
+                if (String.valueOf(a.getID()).equals(appointmentIDText2.getText())) {
+                    String creation = a.getCreation();
+                    String createdBy = a.getCreatedBy();
+                    String updatedBy = a.getUpdatedBy();
+                    appointments.remove(a);
+                    a.setTitle(appointmentTitle);
+                    a.setDescription(appointmentDescription);
+                    a.setLocation(appointmentLocation);
+                    a.setType(appointmentType);
+                    a.setStart(appointmentStartTimeAndDate);
+                    a.setEnd(appointmentEndTimeAndDate);
+                    a.setCreation(creation);
+                    a.setCreatedBy(createdBy);
+                    a.setUpdated(nowLocal);
+                    a.setUpdatedBy(updatedBy);
+                    a.setCustomerID(Integer.parseInt(appointmentCustomerID));
+                    a.setUserID(Integer.parseInt(appointmentUserID));
+                    a.setContactID(contactID);
+                    appointments.add(a);
+                    break;
+                }
+            }
+
+            appointmentTable.setItems(appointments);
+            appointmentTable.refresh();
+
+            //Once done, close
+            stage.close();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            if (customerNameText2.getText().equals("") || customerAddressText2.getText().equals("") || customerPostalCodeText2.getText().equals("") || customerPhoneNumberText2.getText().equals("") || countryComboBox.getSelectionModel().getSelectedIndex() < 0 || fldComboBox.getSelectionModel().getSelectedIndex() < 0) {
+                addCustomerErrorLabel.setText("Missing input values.");
+            } else {
+                addCustomerErrorLabel.setText("Wrong address format.");
+            }
+        }
+    }
+
+    @FXML
+    public void modifyAppointment() {
+
+        try {
+
+            appointmentTable.getSelectionModel().setCellSelectionEnabled(true);
+            appointmentTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+
+            if (appointmentTable.getSelectionModel().getSelectedItem() == null) {
+                throw new Exception();
+            }
+
+            appointmentErrorLabel.setText("");
+            Appointment appointment = appointmentTable.getSelectionModel().getSelectedItem();
+
+            for (Appointment a : appointments) {
+
+                if (a.getID() == appointment.getID()) {
+
+                    found2 = true;
+
+                    copyAppointmentID = String.valueOf(appointment.getID());
+                    copyAppointmentTitle = appointment.getTitle();
+                    copyAppointmentDescription = appointment.getDescription();
+                    copyAppointmentLocation = appointment.getLocation();
+                    copyAppointmentType = appointment.getType();
+                    copyAppointmentStartDate = appointment.getStart();
+                    copyAppointmentEndDate = appointment.getEnd();
+                    copyAppointmentCustomerID = String.valueOf(appointment.getCustomerID());
+                    copyAppointmentUserID = String.valueOf(appointment.getUserID());
+                    copyAppointmentContactID = String.valueOf(appointment.getContactID());
+
+                    switchToUpdateAppointment();
+                    break;
+                }
+            }
+            appointmentTable.refresh();
+        } catch (Exception e) {
+            e.printStackTrace();
+            appointmentErrorLabel.setText("Select an appointment to be modified.");
+        }
+    }
+
+    @FXML
+    public void deleteAppointment() {
+
+        try {
+
+            appointmentTable.getSelectionModel().setCellSelectionEnabled(true);
+            appointmentTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+
+            if (appointmentTable.getSelectionModel().getSelectedItem() == null) {
+                throw new Exception();
+            }
+
+            appointmentErrorLabel.setText("");
+            Appointment appointment = appointmentTable.getSelectionModel().getSelectedItem();
+
+            for (Appointment a : appointments) {
+
+                if (a.getID() == appointment.getID()) {
+
+                    String query = "DELETE FROM appointments WHERE Appointment_ID = " + appointment.getID() + ";";
+
+                    Connection connection = JDBC.getConnection();
+                    Statement statement = connection.createStatement();
+                    statement.executeUpdate(query);
+
+                    appointments.remove(a);
+                    break;
+                }
+            }
+            appointmentErrorLabel.setText("Appointment successfully deleted.");
+            appointmentTable.refresh();
+        } catch (Exception e) {
+            appointmentErrorLabel.setText("Select an appointment to be deleted.");
+        }
+    }
+
+    @FXML
     public void handleAddButtonAction() {
 
         try {
@@ -1247,132 +1432,6 @@ public class Controller {
     }
 
     @FXML
-    public void handleModifyAddAppointmentButtonAction() {
-
-        try {
-
-            appointmentErrorLabel.setText("");
-
-            Stage stage = (Stage) addButton.getScene().getWindow();
-
-            //Get input values from TextFields into variables
-            String appointmentID = appointmentIDText2.getText();
-            String appointmentTitle = appointmentTitleText2.getText();
-            String appointmentDescription = appointmentDescriptionText2.getText();
-            String appointmentLocation = appointmentLocationText2.getText();
-            String appointmentType = appointmentTypeText2.getText();
-            LocalDate appointmentStartDates = appointmentStartDate.getValue();
-            LocalDate appointmentEndDates = appointmentEndDate.getValue();
-            String appointmentCustomerID = appointmentCustomerIDText2.getText();
-            String appointmentUserID = appointmentUserIDText2.getText();
-
-            String appointmentStartTime = appointmentStartTimeComboBox.getValue();
-            String appointmentEndTime = appointmentEndTimeComboBox.getValue();
-            String appointmentStartTimeAndDate = appointmentStartDates.toString() + " " + appointmentStartTime;
-            String appointmentEndTimeAndDate = appointmentEndDates.toString() + " " + appointmentEndTime;
-            int contactID = contactComboBox.getSelectionModel().getSelectedIndex() + 1;
-
-            //Create a query and execute it.
-            LocalDate localDate = LocalDate.now();
-            LocalTime localTime = LocalTime.now();
-            LocalDateTime localDateTime = LocalDateTime.of(localDate, localTime);
-            ZonedDateTime zonedLocalDateTime = ZonedDateTime.of(localDateTime, zoneId);
-            ZonedDateTime utcZonedLocal = ZonedDateTime.ofInstant(zonedLocalDateTime.toInstant(), utcId);
-            String now = utcZonedLocal.toLocalDate() + " " + utcZonedLocal.toLocalTime();
-            ZonedDateTime utcZonedLocal2 = ZonedDateTime.ofInstant(utcZonedLocal.toInstant(), zoneId);
-            String nowLocal = utcZonedLocal2.toLocalDate() + " " + utcZonedLocal2.toLocalTime();
-
-            String query = "UPDATE appointments SET Title = '" + appointmentTitle + "', Description = '" + appointmentDescription + "', Location = '" + appointmentLocation + "', Type = '" + appointmentType + "', Start = '" + appointmentStartTimeAndDate + "', End = '" + appointmentEndTimeAndDate + "', Last_Update = '" + now + "', Customer_ID = '" + appointmentCustomerID + "', User_ID = '" + appointmentUserID + "', Contact_ID = '" + contactID + "' WHERE Appointment_ID = " + appointmentIDText2.getText() + ";";
-
-            Connection connection = JDBC.getConnection();
-            Statement statement = connection.createStatement();
-            statement.executeUpdate(query);
-
-            for (Appointment a : appointments) {
-                if (String.valueOf(a.getID()).equals(appointmentIDText2.getText())) {
-                    String creation = a.getCreation();
-                    String createdBy = a.getCreatedBy();
-                    String updatedBy = a.getUpdatedBy();
-                    appointments.remove(a);
-                    a.setTitle(appointmentTitle);
-                    a.setDescription(appointmentDescription);
-                    a.setLocation(appointmentLocation);
-                    a.setType(appointmentType);
-                    a.setStart(appointmentStartTimeAndDate);
-                    a.setEnd(appointmentEndTimeAndDate);
-                    a.setCreation(creation);
-                    a.setCreatedBy(createdBy);
-                    a.setUpdated(nowLocal);
-                    a.setUpdatedBy(updatedBy);
-                    a.setCustomerID(Integer.parseInt(appointmentCustomerID));
-                    a.setUserID(Integer.parseInt(appointmentUserID));
-                    a.setContactID(contactID);
-                    appointments.add(a);
-                    break;
-                }
-            }
-
-            appointmentTable.setItems(appointments);
-            appointmentTable.refresh();
-
-            //Once done, close
-            stage.close();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            if (customerNameText2.getText().equals("") || customerAddressText2.getText().equals("") || customerPostalCodeText2.getText().equals("") || customerPhoneNumberText2.getText().equals("") || countryComboBox.getSelectionModel().getSelectedIndex() < 0 || fldComboBox.getSelectionModel().getSelectedIndex() < 0) {
-                addCustomerErrorLabel.setText("Missing input values.");
-            } else {
-                addCustomerErrorLabel.setText("Wrong address format.");
-            }
-        }
-
-    }
-
-    @FXML
-    public void modifyAppointment() {
-
-        try {
-
-            appointmentTable.getSelectionModel().setCellSelectionEnabled(true);
-            appointmentTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-
-            if (appointmentTable.getSelectionModel().getSelectedItem() == null) {
-                throw new Exception();
-            }
-
-            appointmentErrorLabel.setText("");
-            Appointment appointment = appointmentTable.getSelectionModel().getSelectedItem();
-
-            for (Appointment a : appointments) {
-
-                if (a.getID() == appointment.getID()) {
-
-                    found2 = true;
-
-                    copyAppointmentID = String.valueOf(appointment.getID());
-                    copyAppointmentTitle = appointment.getTitle();
-                    copyAppointmentDescription = appointment.getDescription();
-                    copyAppointmentLocation = appointment.getLocation();
-                    copyAppointmentType = appointment.getType();
-                    copyAppointmentStartDate = appointment.getStart();
-                    copyAppointmentEndDate = appointment.getEnd();
-                    copyAppointmentCustomerID = String.valueOf(appointment.getCustomerID());
-                    copyAppointmentUserID = String.valueOf(appointment.getUserID());
-                    copyAppointmentContactID = String.valueOf(appointment.getContactID());
-
-                    switchToUpdateAppointment();
-                    break;
-                }
-            }
-            appointmentTable.refresh();
-        } catch (Exception e) {
-            e.printStackTrace();
-            appointmentErrorLabel.setText("Select an appointment to be modified.");
-        }
-    }
-
-    @FXML
     public void deleteCustomer() throws Exception {
 
         try {
@@ -1414,42 +1473,6 @@ public class Controller {
             customerErrorLabel.setText("Select a customer to be deleted.");
         }
         customerTable.refresh();
-    }
-
-    @FXML
-    public void deleteAppointment() {
-
-        try {
-
-            appointmentTable.getSelectionModel().setCellSelectionEnabled(true);
-            appointmentTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-
-            if (appointmentTable.getSelectionModel().getSelectedItem() == null) {
-                throw new Exception();
-            }
-
-            appointmentErrorLabel.setText("");
-            Appointment appointment = appointmentTable.getSelectionModel().getSelectedItem();
-
-            for (Appointment a : appointments) {
-
-                if (a.getID() == appointment.getID()) {
-
-                    String query = "DELETE FROM appointments WHERE Appointment_ID = " + appointment.getID() + ";";
-
-                    Connection connection = JDBC.getConnection();
-                    Statement statement = connection.createStatement();
-                    statement.executeUpdate(query);
-
-                    appointments.remove(a);
-                    break;
-                }
-            }
-            appointmentErrorLabel.setText("Appointment successfully deleted.");
-            appointmentTable.refresh();
-        } catch (Exception e) {
-            appointmentErrorLabel.setText("Select an appointment to be deleted.");
-        }
     }
 
     @FXML
