@@ -561,172 +561,179 @@ public class Controller {
                 new SimpleIntegerProperty(cellData.getValue().getContactID()));
 
 
-        if (first == 1) {
-            // Populates the tables
-            String query = "SELECT * FROM customers";
-            Connection connection = JDBC.getConnection();
-            Statement statement = connection.createStatement();
-            ResultSet resultset = statement.executeQuery(query);
+        if (first >= 1) {
 
-            while (resultset.next()) {
-                Customer customer = new Customer();
-                customer.setId(resultset.getInt(1));
-                customer.setName(resultset.getString(2));
-                customer.setAddress(resultset.getString(3));
-                customer.setPostalCode(resultset.getString(4));
-                customer.setPhoneNumber(resultset.getString(5));
+            if (first == 1) {
+                // Populates the tables
+                String query = "SELECT * FROM customers";
+                Connection connection = JDBC.getConnection();
+                Statement statement = connection.createStatement();
+                ResultSet resultset = statement.executeQuery(query);
 
-                //Format DateTime from UTC to GMT-7
-                String[] parts = resultset.getString(6).split("(\\s)");
-                LocalDate ld = LocalDate.parse(parts[0]);
-                LocalTime lt = LocalTime.parse(parts[1]);
-                LocalDateTime ldt = LocalDateTime.of(ld, lt);
-                ZonedDateTime zdt = ZonedDateTime.ofInstant(ldt, ZoneOffset.UTC, zoneId);
-                String startDateAndTime = zdt.toLocalDate() + " " + zdt.toLocalTime();
+                while (resultset.next()) {
+                    Customer customer = new Customer();
+                    customer.setId(resultset.getInt(1));
+                    customer.setName(resultset.getString(2));
+                    customer.setAddress(resultset.getString(3));
+                    customer.setPostalCode(resultset.getString(4));
+                    customer.setPhoneNumber(resultset.getString(5));
 
-                customer.setCreationDate(startDateAndTime);
-                customer.setCreatedBy(resultset.getString(7));
+                    //Format DateTime from UTC to GMT-7
+                    String[] parts = resultset.getString(6).split("(\\s)");
+                    LocalDate ld = LocalDate.parse(parts[0]);
+                    LocalTime lt = LocalTime.parse(parts[1]);
+                    LocalDateTime ldt = LocalDateTime.of(ld, lt);
+                    ZonedDateTime zdt = ZonedDateTime.ofInstant(ldt, ZoneOffset.UTC, zoneId);
+                    String startDateAndTime = zdt.toLocalDate() + " " + zdt.toLocalTime();
 
-                //Format DateTime from UTC to GMT-7
-                parts = resultset.getString(8).split("(\\s)");
-                ld = LocalDate.parse(parts[0]);
-                lt = LocalTime.parse(parts[1]);
-                ldt = LocalDateTime.of(ld, lt);
-                zdt = ZonedDateTime.ofInstant(ldt, ZoneOffset.UTC, zoneId);
-                startDateAndTime = zdt.toLocalDate() + " " + zdt.toLocalTime();
+                    customer.setCreationDate(startDateAndTime);
+                    customer.setCreatedBy(resultset.getString(7));
 
-                customer.setLastUpdate(startDateAndTime);
-                customer.setLastUpdatedBy(resultset.getString(9));
-                customer.setDivisionID(resultset.getInt(10));
-                customers.add(customer);
+                    //Format DateTime from UTC to GMT-7
+                    parts = resultset.getString(8).split("(\\s)");
+                    ld = LocalDate.parse(parts[0]);
+                    lt = LocalTime.parse(parts[1]);
+                    ldt = LocalDateTime.of(ld, lt);
+                    zdt = ZonedDateTime.ofInstant(ldt, ZoneOffset.UTC, zoneId);
+                    startDateAndTime = zdt.toLocalDate() + " " + zdt.toLocalTime();
+
+                    customer.setLastUpdate(startDateAndTime);
+                    customer.setLastUpdatedBy(resultset.getString(9));
+                    customer.setDivisionID(resultset.getInt(10));
+                    customers.add(customer);
+                }
+                customerTable.setItems(customers);
+
+                // Populates the tables
+                String query2 = "SELECT * FROM appointments";
+
+                connection = JDBC.getConnection();
+                statement = connection.createStatement();
+                ResultSet resultset2 = statement.executeQuery(query2);
+                appointments.clear();
+
+                while (resultset2.next()) {
+                    Appointment appointment = new Appointment();
+                    appointment.setID(resultset2.getInt(1));
+                    appointment.setTitle(resultset2.getString(2));
+                    appointment.setDescription(resultset2.getString(3));
+                    appointment.setLocation(resultset2.getString(4));
+                    appointment.setType(resultset2.getString(5));
+
+                    //Format DateTime from UTC to GMT-7
+                    String[] parts = resultset2.getString(6).split("(\\s)");
+                    LocalDate ld = LocalDate.parse(parts[0]);
+                    LocalTime lt = LocalTime.parse(parts[1]);
+                    LocalDateTime ldt = LocalDateTime.of(ld, lt);
+                    ZonedDateTime zdt = ZonedDateTime.ofInstant(ldt, ZoneOffset.UTC, zoneId);
+                    String startDateAndTime = zdt.toLocalDate() + " " + zdt.toLocalTime();
+
+                    appointment.setStart(startDateAndTime);
+
+                    //Format DateTime from UTC to GMT-7
+                    parts = resultset2.getString(7).split("(\\s)");
+                    ld = LocalDate.parse(parts[0]);
+                    lt = LocalTime.parse(parts[1]);
+                    ldt = LocalDateTime.of(ld, lt);
+                    zdt = ZonedDateTime.ofInstant(ldt, ZoneOffset.UTC, zoneId);
+                    startDateAndTime = zdt.toLocalDate() + " " + zdt.toLocalTime();
+
+                    appointment.setEnd(startDateAndTime);
+
+                    //Format DateTime from UTC to GMT-7
+                    parts = resultset2.getString(8).split("(\\s)");
+                    ld = LocalDate.parse(parts[0]);
+                    lt = LocalTime.parse(parts[1]);
+                    ldt = LocalDateTime.of(ld, lt);
+                    zdt = ZonedDateTime.ofInstant(ldt, ZoneOffset.UTC, zoneId);
+                    startDateAndTime = zdt.toLocalDate() + " " + zdt.toLocalTime();
+
+                    appointment.setCreation(startDateAndTime);
+                    appointment.setCreatedBy(resultset2.getString(9));
+
+                    //Format DateTime from UTC to GMT-7
+                    parts = resultset2.getString(10).split("(\\s)");
+                    ld = LocalDate.parse(parts[0]);
+                    lt = LocalTime.parse(parts[1]);
+                    ldt = LocalDateTime.of(ld, lt);
+                    zdt = ZonedDateTime.ofInstant(ldt, ZoneOffset.UTC, zoneId);
+                    startDateAndTime = zdt.toLocalDate() + " " + zdt.toLocalTime();
+
+                    appointment.setUpdated(startDateAndTime);
+                    appointment.setUpdatedBy(resultset2.getString(11));
+                    appointment.setCustomerID(Integer.parseInt(resultset2.getString(12)));
+                    appointment.setUserID(Integer.parseInt(resultset2.getString(13)));
+                    appointment.setContactID(Integer.parseInt(resultset2.getString(14)));
+                    appointments.add(appointment);
+                }
+                appointmentTable.setItems(appointments);
+            } else {
+                // Populates the tables
+                String query2 = "SELECT * FROM appointments";
+
+                Connection connection = JDBC.getConnection();
+                Statement statement = connection.createStatement();
+                ResultSet resultset2 = statement.executeQuery(query2);
+                appointments.clear();
+
+                while (resultset2.next()) {
+                    Appointment appointment = new Appointment();
+                    appointment.setID(resultset2.getInt(1));
+                    appointment.setTitle(resultset2.getString(2));
+                    appointment.setDescription(resultset2.getString(3));
+                    appointment.setLocation(resultset2.getString(4));
+                    appointment.setType(resultset2.getString(5));
+
+                    //Format DateTime from UTC to GMT-7
+                    String[] parts = resultset2.getString(6).split("(\\s)");
+                    LocalDate ld = LocalDate.parse(parts[0]);
+                    LocalTime lt = LocalTime.parse(parts[1]);
+                    LocalDateTime ldt = LocalDateTime.of(ld, lt);
+                    ZonedDateTime zdt = ZonedDateTime.ofInstant(ldt, ZoneOffset.UTC, zoneId);
+                    String startDateAndTime = zdt.toLocalDate() + " " + zdt.toLocalTime();
+
+                    appointment.setStart(startDateAndTime);
+
+                    //Format DateTime from UTC to GMT-7
+                    parts = resultset2.getString(7).split("(\\s)");
+                    ld = LocalDate.parse(parts[0]);
+                    lt = LocalTime.parse(parts[1]);
+                    ldt = LocalDateTime.of(ld, lt);
+                    zdt = ZonedDateTime.ofInstant(ldt, ZoneOffset.UTC, zoneId);
+                    startDateAndTime = zdt.toLocalDate() + " " + zdt.toLocalTime();
+
+                    appointment.setEnd(startDateAndTime);
+
+                    //Format DateTime from UTC to GMT-7
+                    parts = resultset2.getString(8).split("(\\s)");
+                    ld = LocalDate.parse(parts[0]);
+                    lt = LocalTime.parse(parts[1]);
+                    ldt = LocalDateTime.of(ld, lt);
+                    zdt = ZonedDateTime.ofInstant(ldt, ZoneOffset.UTC, zoneId);
+                    startDateAndTime = zdt.toLocalDate() + " " + zdt.toLocalTime();
+
+                    appointment.setCreation(startDateAndTime);
+                    appointment.setCreatedBy(resultset2.getString(9));
+
+                    //Format DateTime from UTC to GMT-7
+                    parts = resultset2.getString(10).split("(\\s)");
+                    ld = LocalDate.parse(parts[0]);
+                    lt = LocalTime.parse(parts[1]);
+                    ldt = LocalDateTime.of(ld, lt);
+                    zdt = ZonedDateTime.ofInstant(ldt, ZoneOffset.UTC, zoneId);
+                    startDateAndTime = zdt.toLocalDate() + " " + zdt.toLocalTime();
+
+                    appointment.setUpdated(startDateAndTime);
+                    appointment.setUpdatedBy(resultset2.getString(11));
+                    appointment.setCustomerID(Integer.parseInt(resultset2.getString(12)));
+                    appointment.setUserID(Integer.parseInt(resultset2.getString(13)));
+                    appointment.setContactID(Integer.parseInt(resultset2.getString(14)));
+                    appointments.add(appointment);
+                }
+                appointmentTable.setItems(appointments);
             }
-            customerTable.setItems(customers);
-
-            // Populates the tables
-            String query2 = "SELECT * FROM appointments";
-            ResultSet resultset2 = statement.executeQuery(query2);
-            appointments.clear();
-
-            while (resultset2.next()) {
-                Appointment appointment = new Appointment();
-                appointment.setID(resultset2.getInt(1));
-                appointment.setTitle(resultset2.getString(2));
-                appointment.setDescription(resultset2.getString(3));
-                appointment.setLocation(resultset2.getString(4));
-                appointment.setType(resultset2.getString(5));
-
-                //Format DateTime from UTC to GMT-7
-                String[] parts = resultset2.getString(6).split("(\\s)");
-                LocalDate ld = LocalDate.parse(parts[0]);
-                LocalTime lt = LocalTime.parse(parts[1]);
-                LocalDateTime ldt = LocalDateTime.of(ld, lt);
-                ZonedDateTime zdt = ZonedDateTime.ofInstant(ldt, ZoneOffset.UTC, zoneId);
-                String startDateAndTime = zdt.toLocalDate() + " " + zdt.toLocalTime();
-
-                appointment.setStart(startDateAndTime);
-
-                //Format DateTime from UTC to GMT-7
-                parts = resultset2.getString(7).split("(\\s)");
-                ld = LocalDate.parse(parts[0]);
-                lt = LocalTime.parse(parts[1]);
-                ldt = LocalDateTime.of(ld, lt);
-                zdt = ZonedDateTime.ofInstant(ldt, ZoneOffset.UTC, zoneId);
-                startDateAndTime = zdt.toLocalDate() + " " + zdt.toLocalTime();
-
-                appointment.setEnd(startDateAndTime);
-
-                //Format DateTime from UTC to GMT-7
-                parts = resultset2.getString(8).split("(\\s)");
-                ld = LocalDate.parse(parts[0]);
-                lt = LocalTime.parse(parts[1]);
-                ldt = LocalDateTime.of(ld, lt);
-                zdt = ZonedDateTime.ofInstant(ldt, ZoneOffset.UTC, zoneId);
-                startDateAndTime = zdt.toLocalDate() + " " + zdt.toLocalTime();
-
-                appointment.setCreation(startDateAndTime);
-                appointment.setCreatedBy(resultset2.getString(9));
-
-                //Format DateTime from UTC to GMT-7
-                parts = resultset2.getString(10).split("(\\s)");
-                ld = LocalDate.parse(parts[0]);
-                lt = LocalTime.parse(parts[1]);
-                ldt = LocalDateTime.of(ld, lt);
-                zdt = ZonedDateTime.ofInstant(ldt, ZoneOffset.UTC, zoneId);
-                startDateAndTime = zdt.toLocalDate() + " " + zdt.toLocalTime();
-
-                appointment.setUpdated(startDateAndTime);
-                appointment.setUpdatedBy(resultset2.getString(11));
-                appointment.setCustomerID(Integer.parseInt(resultset2.getString(12)));
-                appointment.setUserID(Integer.parseInt(resultset2.getString(13)));
-                appointment.setContactID(Integer.parseInt(resultset2.getString(14)));
-                appointments.add(appointment);
-            }
-            appointmentTable.setItems(appointments);
         }
-        if (first >= 2) {
-            Connection connection = JDBC.getConnection();
-            Statement statement = connection.createStatement();
-            // Populates the tables
-            String query2 = "SELECT * FROM appointments";
-            ResultSet resultset2 = statement.executeQuery(query2);
-            appointments.clear();
 
-            while (resultset2.next()) {
-                Appointment appointment = new Appointment();
-                appointment.setID(resultset2.getInt(1));
-                appointment.setTitle(resultset2.getString(2));
-                appointment.setDescription(resultset2.getString(3));
-                appointment.setLocation(resultset2.getString(4));
-                appointment.setType(resultset2.getString(5));
-
-                //Format DateTime from UTC to GMT-7
-                String[] parts = resultset2.getString(6).split("(\\s)");
-                LocalDate ld = LocalDate.parse(parts[0]);
-                LocalTime lt = LocalTime.parse(parts[1]);
-                LocalDateTime ldt = LocalDateTime.of(ld, lt);
-                ZonedDateTime zdt = ZonedDateTime.ofInstant(ldt, ZoneOffset.UTC, zoneId);
-                String startDateAndTime = zdt.toLocalDate() + " " + zdt.toLocalTime();
-
-                appointment.setStart(startDateAndTime);
-
-                //Format DateTime from UTC to GMT-7
-                parts = resultset2.getString(7).split("(\\s)");
-                ld = LocalDate.parse(parts[0]);
-                lt = LocalTime.parse(parts[1]);
-                ldt = LocalDateTime.of(ld, lt);
-                zdt = ZonedDateTime.ofInstant(ldt, ZoneOffset.UTC, zoneId);
-                startDateAndTime = zdt.toLocalDate() + " " + zdt.toLocalTime();
-
-                appointment.setEnd(startDateAndTime);
-
-                //Format DateTime from UTC to GMT-7
-                parts = resultset2.getString(8).split("(\\s)");
-                ld = LocalDate.parse(parts[0]);
-                lt = LocalTime.parse(parts[1]);
-                ldt = LocalDateTime.of(ld, lt);
-                zdt = ZonedDateTime.ofInstant(ldt, ZoneOffset.UTC, zoneId);
-                startDateAndTime = zdt.toLocalDate() + " " + zdt.toLocalTime();
-
-                appointment.setCreation(startDateAndTime);
-                appointment.setCreatedBy(resultset2.getString(9));
-
-                //Format DateTime from UTC to GMT-7
-                parts = resultset2.getString(10).split("(\\s)");
-                ld = LocalDate.parse(parts[0]);
-                lt = LocalTime.parse(parts[1]);
-                ldt = LocalDateTime.of(ld, lt);
-                zdt = ZonedDateTime.ofInstant(ldt, ZoneOffset.UTC, zoneId);
-                startDateAndTime = zdt.toLocalDate() + " " + zdt.toLocalTime();
-
-                appointment.setUpdated(startDateAndTime);
-                appointment.setUpdatedBy(resultset2.getString(11));
-                appointment.setCustomerID(Integer.parseInt(resultset2.getString(12)));
-                appointment.setUserID(Integer.parseInt(resultset2.getString(13)));
-                appointment.setContactID(Integer.parseInt(resultset2.getString(14)));
-                appointments.add(appointment);
-            }
-            appointmentTable.setItems(appointments);
-        }
         first++;
 
         //Get locale based on devices location, and create a resource bundle from it.
@@ -1024,7 +1031,26 @@ public class Controller {
             }
 
             String appointmentStartTimeAndDate = appointmentStartDates.toString() + " " + appointmentStartTime;
+            System.out.println(appointmentStartTimeAndDate);
+
+            parts = appointmentStartTimeAndDate.split("\\s");
+            ld = LocalDate.parse(parts[0]);
+            lt = LocalTime.parse(parts[1]);
+            ldt = LocalDateTime.of(ld, lt);
+            zdt = ZonedDateTime.of(ldt, zoneId);
+            ZonedDateTime utcZonedLocalStart = ZonedDateTime.ofInstant(zdt.toInstant(), utcId);
+            String utcStart = utcZonedLocalStart.toLocalDate() + " " + utcZonedLocalStart.toLocalTime();
+
             String appointmentEndTimeAndDate = appointmentEndDates.toString() + " " + appointmentEndTime;
+
+            parts = appointmentEndTimeAndDate.split("\\s");
+            ld = LocalDate.parse(parts[0]);
+            lt = LocalTime.parse(parts[1]);
+            ldt = LocalDateTime.of(ld, lt);
+            zdt = ZonedDateTime.of(ldt, zoneId);
+            ZonedDateTime utcZonedLocalEnd = ZonedDateTime.ofInstant(zdt.toInstant(), utcId);
+            String utcEnd = utcZonedLocalEnd.toLocalDate() + " " + utcZonedLocalEnd.toLocalTime();
+
             int contactID = contactComboBox.getSelectionModel().getSelectedIndex() + 1;
 
             //Create a query and execute it.
@@ -1037,7 +1063,7 @@ public class Controller {
             ZonedDateTime utcZonedLocal2 = ZonedDateTime.ofInstant(utcZonedLocal.toInstant(), zoneId);
             String nowLocal = utcZonedLocal2.toLocalDate() + " " + utcZonedLocal2.toLocalTime();
 
-            String query = "UPDATE appointments SET Title = '" + appointmentTitle + "', Description = '" + appointmentDescription + "', Location = '" + appointmentLocation + "', Type = '" + appointmentType + "', Start = '" + appointmentStartTimeAndDate + "', End = '" + appointmentEndTimeAndDate + "', Last_Update = '" + now + "', Customer_ID = '" + appointmentCustomerID + "', User_ID = '" + appointmentUserID + "', Contact_ID = '" + contactID + "' WHERE Appointment_ID = " + appointmentIDText2.getText() + ";";
+            String query = "UPDATE appointments SET Title = '" + appointmentTitle + "', Description = '" + appointmentDescription + "', Location = '" + appointmentLocation + "', Type = '" + appointmentType + "', Start = '" + utcStart + "', End = '" + utcEnd + "', Last_Update = '" + now + "', Customer_ID = '" + appointmentCustomerID + "', User_ID = '" + appointmentUserID + "', Contact_ID = '" + contactID + "' WHERE Appointment_ID = " + appointmentIDText2.getText() + ";";
 
             Connection connection = JDBC.getConnection();
             Statement statement = connection.createStatement();
@@ -1075,7 +1101,8 @@ public class Controller {
         }
         catch (Exception e) {
             e.printStackTrace();
-            if (customerNameText2.getText().equals("") || customerAddressText2.getText().equals("") || customerPostalCodeText2.getText().equals("") || customerPhoneNumberText2.getText().equals("") || countryComboBox.getSelectionModel().getSelectedIndex() < 0 || fldComboBox.getSelectionModel().getSelectedIndex() < 0) {
+            System.out.println(e.getMessage());
+            if (appointmentIDText2.getText().equals("") || appointmentTitleText2.getText().equals("") || appointmentDescriptionText2.getText().equals("") || appointmentLocationText2.getText().equals("") || appointmentTypeText2.getText().equals("") || contactComboBox.getSelectionModel().getSelectedIndex() < 0 || appointmentStartTimeComboBox.getSelectionModel().getSelectedIndex() < 0 || appointmentEndTimeComboBox.getSelectionModel().getSelectedIndex() < 0 || appointmentStartDate.getValue() == null || appointmentEndDate.getValue() == null || appointmentCustomerIDText2.getText().equals("") || appointmentUserIDText2.getText().equals("")) {
                 addCustomerErrorLabel.setText("Missing input values.");
             } else {
                 addCustomerErrorLabel.setText("Wrong address format.");
@@ -1401,7 +1428,63 @@ public class Controller {
             try (ResultSet resultsets = statements.executeQuery(querys)) {
 
                 while (resultsets.next()) {
-                    associatedAppointments.add(new Appointment(Integer.parseInt(resultsets.getString(1)), resultsets.getString(2), resultsets.getString(3), resultsets.getString(4), resultsets.getString(5), resultsets.getString(6), resultsets.getString(7), resultsets.getString(8), resultsets.getString(9), resultsets.getString(10), resultsets.getString(11), Integer.parseInt(resultsets.getString(12)), Integer.parseInt(resultsets.getString(13)), Integer.parseInt(resultsets.getString(14))));
+
+                    Appointment appointment = new Appointment();
+                    appointment.setID(resultsets.getInt(1));
+                    appointment.setTitle(resultsets.getString(2));
+                    appointment.setDescription(resultsets.getString(3));
+                    appointment.setLocation(resultsets.getString(4));
+                    appointment.setType(resultsets.getString(5));
+
+                    //Format DateTime from UTC to GMT-7
+                    String[] parts = resultsets.getString(6).split("(\\s)");
+                    LocalDate ld = LocalDate.parse(parts[0]);
+                    LocalTime lt = LocalTime.parse(parts[1]);
+                    LocalDateTime ldt = LocalDateTime.of(ld, lt);
+                    ZonedDateTime zdt = ZonedDateTime.ofInstant(ldt, ZoneOffset.UTC, zoneId);
+                    String startDateAndTime = zdt.toLocalDate() + " " + zdt.toLocalTime();
+
+                    appointment.setStart(startDateAndTime);
+
+                    //Format DateTime from UTC to GMT-7
+                    parts = resultsets.getString(7).split("(\\s)");
+                    ld = LocalDate.parse(parts[0]);
+                    lt = LocalTime.parse(parts[1]);
+                    ldt = LocalDateTime.of(ld, lt);
+                    zdt = ZonedDateTime.ofInstant(ldt, ZoneOffset.UTC, zoneId);
+                    startDateAndTime = zdt.toLocalDate() + " " + zdt.toLocalTime();
+
+                    appointment.setEnd(startDateAndTime);
+
+                    //Format DateTime from UTC to GMT-7
+                    parts = resultsets.getString(8).split("(\\s)");
+                    ld = LocalDate.parse(parts[0]);
+                    lt = LocalTime.parse(parts[1]);
+                    ldt = LocalDateTime.of(ld, lt);
+                    zdt = ZonedDateTime.ofInstant(ldt, ZoneOffset.UTC, zoneId);
+                    startDateAndTime = zdt.toLocalDate() + " " + zdt.toLocalTime();
+
+                    appointment.setCreation(startDateAndTime);
+                    appointment.setCreatedBy(resultsets.getString(9));
+
+                    //Format DateTime from UTC to GMT-7
+                    parts = resultsets.getString(10).split("(\\s)");
+                    ld = LocalDate.parse(parts[0]);
+                    lt = LocalTime.parse(parts[1]);
+                    ldt = LocalDateTime.of(ld, lt);
+                    zdt = ZonedDateTime.ofInstant(ldt, ZoneOffset.UTC, zoneId);
+                    startDateAndTime = zdt.toLocalDate() + " " + zdt.toLocalTime();
+
+                    appointment.setUpdated(startDateAndTime);
+                    appointment.setUpdatedBy(resultsets.getString(11));
+                    appointment.setCustomerID(Integer.parseInt(resultsets.getString(12)));
+                    appointment.setUserID(Integer.parseInt(resultsets.getString(13)));
+                    appointment.setContactID(Integer.parseInt(resultsets.getString(14)));
+                    associatedAppointments.add(appointment);
+
+                    //Appointment a = new Appointment(Integer.parseInt(resultsets.getString(1)), resultsets.getString(2), resultsets.getString(3), resultsets.getString(4), resultsets.getString(5), resultsets.getString(6), resultsets.getString(7), resultsets.getString(8), resultsets.getString(9), resultsets.getString(10), resultsets.getString(11), Integer.parseInt(resultsets.getString(12)), Integer.parseInt(resultsets.getString(13)), Integer.parseInt(resultsets.getString(14)));
+                    //associatedAppointments.add(a);
+
                 }
             }
 
