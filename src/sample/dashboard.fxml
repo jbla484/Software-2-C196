@@ -26,10 +26,10 @@
       <Button fx:id="loginButton" layoutX="423.0" layoutY="284.0" mnemonicParsing="false" onAction="#checkLoginButton" text="Login" />
       <Line endX="57.0" endY="207.0" layoutX="302.0" layoutY="121.0" startX="57.0" startY="-121.0" />
       <Label fx:id="dashLabel1" layoutX="15.0" layoutY="73.0" prefHeight="71.0" prefWidth="327.0" text="This application allows it's users to login to their account from a database, determining the user's country and displaying a calander of all scheduled appointments. " textAlignment="CENTER" wrapText="true" />
-      <Label fx:id="locationText" layoutX="412.0" layoutY="204.0" prefHeight="17.0" prefWidth="161.0" style="-fx-alignment: center;" text="Location: " />
+      <Label fx:id="locationText" layoutX="412.0" layoutY="193.0" prefHeight="45.0" prefWidth="161.0" style="-fx-alignment: center;" text="Location: " />
       <Label fx:id="dashLabel2" layoutX="15.0" layoutY="144.0" prefHeight="124.0" prefWidth="327.0" text="The application also allows user's to add, delete, and update customer records and appointments. The users can view appointment schedules in a month to month or week to week fashion. The application alerts it's users when there's an appointment within 15 minutes of the user's log-in." textAlignment="CENTER" wrapText="true" />
       <Button fx:id="closeButton" layoutX="521.0" layoutY="284.0" mnemonicParsing="false" text="Close" />
-      <Label fx:id="errorDescription" layoutX="388.0" layoutY="229.0" prefHeight="39.0" prefWidth="209.0" style="-fx-alignment: center;" textAlignment="CENTER" textFill="#ff1e1e" wrapText="true" />
+      <Label fx:id="errorDescription" layoutX="388.0" layoutY="235.0" prefHeight="39.0" prefWidth="209.0" style="-fx-alignment: center;" textAlignment="CENTER" textFill="#ff1e1e" wrapText="true" />
       <Label fx:id="dashLabel3" layoutX="15.0" layoutY="277.0" prefHeight="39.0" prefWidth="327.0" text="If you have any questions or concerns feel free to contact me at Jbla484@wgu.edu." textAlignment="CENTER" wrapText="true" />
       <Label fx:id="dashLabel4" layoutX="15.0" layoutY="150.0" prefHeight="124.0" prefWidth="327.0" textAlignment="CENTER" wrapText="true" />
    </children>
