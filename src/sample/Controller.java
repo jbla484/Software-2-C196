@@ -11,6 +11,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.sql.*;
 import java.time.*;
+import java.time.temporal.ChronoUnit;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
@@ -216,6 +217,8 @@ public class Controller {
     public static boolean found2 = false;
     @FXML
     public static boolean found3 = false;
+    @FXML
+    public static boolean overlap = false;
     @FXML
     public String userIDs = "";
     @FXML
@@ -867,6 +870,8 @@ public class Controller {
 
         String query = "Select * FROM users WHERE User_Name = '" + userIDs + "' AND Password = '" + userPasswords + "';";
 
+        boolean foundApp = false;
+
         Connection connection = JDBC.getConnection();
         try (Statement statement = connection.createStatement();
         ResultSet resultset = statement.executeQuery(query)) {
@@ -880,8 +885,49 @@ public class Controller {
 
             } else {
 
+                String query3 = "Select User_ID FROM users WHERE User_Name = '" + userIDs + "';";
+                ResultSet resultset2 = statement.executeQuery(query3);
+
+                if (resultset2.next()) {
+                    query3 = "Select Appointment_ID, Start, End FROM Appointments WHERE User_ID = " + resultset2.getString(1) + ";";
+                    ResultSet resultset3 = statement.executeQuery(query3);
+
+                    LocalDateTime ldtNow = LocalDateTime.now();
+                    ZonedDateTime zltdNow = ZonedDateTime.of(ldtNow, zoneId);
+                    ZonedDateTime zltdNowPlus15 = ZonedDateTime.of(ldtNow, zoneId).plus(Duration.of(15, ChronoUnit.MINUTES));
+
+                    while (resultset3.next()) {
+
+                        String[] parts = resultset3.getString(2).split("\\s");
+                        LocalTime ltStart = LocalTime.parse(parts[1]);
+                        LocalDate ldStart = LocalDate.parse(parts[0]);
+                        LocalDateTime ldtStart = LocalDateTime.of(ldStart, ltStart);
+                        ZonedDateTime zdtStart = ZonedDateTime.of(ldtStart, utcId);
+                        ZonedDateTime zdtStartLocal = ZonedDateTime.ofInstant(zdtStart.toInstant(), zoneId);
+
+                        String[] parts2 = resultset3.getString(3).split("\\s");
+                        LocalTime ltEnd = LocalTime.parse(parts2[1]);
+                        LocalDate ldEnd = LocalDate.parse(parts2[0]);
+                        LocalDateTime ldtEnd = LocalDateTime.of(ldEnd, ltEnd);
+                        ZonedDateTime zdtEnd = ZonedDateTime.of(ldtEnd, utcId);
+                        ZonedDateTime zdtEndLocal = ZonedDateTime.ofInstant(zdtEnd.toInstant(), zoneId);
+
+                        if (zdtStartLocal.isAfter(zltdNow) && zdtStartLocal.isBefore(zltdNowPlus15)) {
+                            foundApp = true;
+                        }
+                    }
+                }
+
                 errorDescription.setText("Successfully logged in.");
                 switchToHome();
+
+                if (foundApp) {
+                    System.out.println("appointment within 15 minutes");
+                    switchToUpcomingAppointment();
+                    //FIXME MAKE TEXTFIELDS AND POPULATE THEM BASED ON VALUES OF APPOINTMENT
+                } else {
+                    System.out.println("no appointment");
+                }
 
                 stage.close();
             }
@@ -951,6 +997,35 @@ public class Controller {
                 throw new Exception();
             }
 
+            String query = "SELECT Start, End FROM Appointments WHERE Customer_ID = " + customerID + ";";
+
+            Connection connection = JDBC.getConnection();
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery(query);
+
+            while (rs.next()) {
+                String[] parts = rs.getString(1).split("\\s");
+                LocalTime ltStart = LocalTime.parse(parts[1]);
+                LocalDate ldStart = LocalDate.parse(parts[0]);
+                String[] parts2 = rs.getString(2).split("\\s");
+                LocalTime ltEnd = LocalTime.parse(parts2[1]);
+                LocalDate ldEnd = LocalDate.parse(parts2[0]);
+
+                //appointment times and dates
+                LocalDateTime startsDateAndTime = LocalDateTime.of(ldStart, ltStart);
+                LocalDateTime endsDateAndTime = LocalDateTime.of(ldEnd, ltEnd);
+                LocalDateTime startLTD = LocalDateTime.of(utcZonedStart.toLocalDate(), utcZonedStart.toLocalTime());
+                LocalDateTime endLTD = LocalDateTime.of(utcZonedEnd.toLocalDate(), utcZonedEnd.toLocalTime());
+
+                //see if appointment matches types value
+                if (startLTD.isAfter(endsDateAndTime)) {
+
+                } else if ((startLTD.isAfter(startsDateAndTime) || startLTD.isEqual(startsDateAndTime)) && (endLTD.isBefore(endsDateAndTime) || endLTD.isEqual(endsDateAndTime) || endLTD.isAfter(endsDateAndTime))) {
+                    overlap = true;
+                    throw new Exception();
+                }
+            }
+
             LocalDate localDate = LocalDate.now();
             LocalTime localTime = LocalTime.now();
             LocalDateTime localDateTime = LocalDateTime.of(localDate, localTime);
@@ -967,8 +1042,6 @@ public class Controller {
                     startDateAndTime + "', '" + endDateAndTime + "', '" + creationDate + "', '" + createdBy + "', '" +
                     creationDate + "', '" + createdBy + "', '" + customerID + "', '" + userID + "', '" + contactIndex + "');";
 
-            Connection connection = JDBC.getConnection();
-            Statement statement = connection.createStatement();
             statement.executeUpdate(query2);
 
             //Add appointment to list
@@ -981,6 +1054,10 @@ public class Controller {
         }
         catch (Exception e) {
             addAppointmentErrorLabel.setText("Appointment must be between 8 am. and 10 pm EST.");
+            if (overlap) {
+                addAppointmentErrorLabel.setText("Cannot schedule overlapping appointments.");
+                overlap = false;
+            }
         }
     }
 
@@ -1031,7 +1108,6 @@ public class Controller {
             }
 
             String appointmentStartTimeAndDate = appointmentStartDates.toString() + " " + appointmentStartTime;
-            System.out.println(appointmentStartTimeAndDate);
 
             parts = appointmentStartTimeAndDate.split("\\s");
             ld = LocalDate.parse(parts[0]);
@@ -1053,6 +1129,35 @@ public class Controller {
 
             int contactID = contactComboBox.getSelectionModel().getSelectedIndex() + 1;
 
+            String query7 = "SELECT Start, End FROM Appointments WHERE Customer_ID = " + appointmentCustomerID + ";";
+
+            Connection connection = JDBC.getConnection();
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery(query7);
+
+            while (rs.next()) {
+                String[] parts2 = rs.getString(1).split("\\s");
+                LocalTime ltStart = LocalTime.parse(parts2[1]);
+                LocalDate ldStart = LocalDate.parse(parts2[0]);
+                String[] parts3 = rs.getString(2).split("\\s");
+                LocalTime ltEnd = LocalTime.parse(parts3[1]);
+                LocalDate ldEnd = LocalDate.parse(parts3[0]);
+
+                //appointment times and dates
+                LocalDateTime startsDateAndTime = LocalDateTime.of(ldStart, ltStart);
+                LocalDateTime endsDateAndTime = LocalDateTime.of(ldEnd, ltEnd);
+                LocalDateTime startLTD = LocalDateTime.of(utcZonedLocalStart.toLocalDate(), utcZonedLocalStart.toLocalTime());
+                LocalDateTime endLTD = LocalDateTime.of(utcZonedLocalEnd.toLocalDate(), utcZonedLocalEnd.toLocalTime());
+
+                //see if appointment matches types value
+                if (startLTD.isAfter(endsDateAndTime)) {
+
+                } else if (((startLTD.isAfter(startsDateAndTime) || startLTD.isEqual(startsDateAndTime)) && (endLTD.isBefore(endsDateAndTime) || endLTD.isEqual(endsDateAndTime) || endLTD.isAfter(endsDateAndTime))) || (startLTD.isBefore(startsDateAndTime) && endLTD.isBefore(endsDateAndTime))) {
+                    overlap = true;
+                    throw new Exception();
+                }
+            }
+
             //Create a query and execute it.
             LocalDate localDate = LocalDate.now();
             LocalTime localTime = LocalTime.now();
@@ -1065,8 +1170,6 @@ public class Controller {
 
             String query = "UPDATE appointments SET Title = '" + appointmentTitle + "', Description = '" + appointmentDescription + "', Location = '" + appointmentLocation + "', Type = '" + appointmentType + "', Start = '" + utcStart + "', End = '" + utcEnd + "', Last_Update = '" + now + "', Customer_ID = '" + appointmentCustomerID + "', User_ID = '" + appointmentUserID + "', Contact_ID = '" + contactID + "' WHERE Appointment_ID = " + appointmentIDText2.getText() + ";";
 
-            Connection connection = JDBC.getConnection();
-            Statement statement = connection.createStatement();
             statement.executeUpdate(query);
 
             for (Appointment a : appointments) {
@@ -1100,9 +1203,10 @@ public class Controller {
             stage.close();
         }
         catch (Exception e) {
-            e.printStackTrace();
-            System.out.println(e.getMessage());
-            if (appointmentIDText2.getText().equals("") || appointmentTitleText2.getText().equals("") || appointmentDescriptionText2.getText().equals("") || appointmentLocationText2.getText().equals("") || appointmentTypeText2.getText().equals("") || contactComboBox.getSelectionModel().getSelectedIndex() < 0 || appointmentStartTimeComboBox.getSelectionModel().getSelectedIndex() < 0 || appointmentEndTimeComboBox.getSelectionModel().getSelectedIndex() < 0 || appointmentStartDate.getValue() == null || appointmentEndDate.getValue() == null || appointmentCustomerIDText2.getText().equals("") || appointmentUserIDText2.getText().equals("")) {
+            if (overlap) {
+                addCustomerErrorLabel.setText("Cannot schedule overlapping appointments.");
+                overlap = false;
+            } else if (appointmentIDText2.getText().equals("") || appointmentTitleText2.getText().equals("") || appointmentDescriptionText2.getText().equals("") || appointmentLocationText2.getText().equals("") || appointmentTypeText2.getText().equals("") || contactComboBox.getSelectionModel().getSelectedIndex() < 0 || appointmentStartTimeComboBox.getSelectionModel().getSelectedIndex() < 0 || appointmentEndTimeComboBox.getSelectionModel().getSelectedIndex() < 0 || appointmentStartDate.getValue() == null || appointmentEndDate.getValue() == null || appointmentCustomerIDText2.getText().equals("") || appointmentUserIDText2.getText().equals("")) {
                 addCustomerErrorLabel.setText("Missing input values.");
             } else {
                 addCustomerErrorLabel.setText("Wrong address format.");
@@ -1148,7 +1252,6 @@ public class Controller {
             }
             appointmentTable.refresh();
         } catch (Exception e) {
-            e.printStackTrace();
             appointmentErrorLabel.setText("Select an appointment to be modified.");
         }
     }
@@ -1635,6 +1738,7 @@ public class Controller {
 
     @FXML
     private void switchToAddAppointment() throws IOException, SQLException {
+
         appointmentErrorLabel.setText("");
 
         //Find next Customer ID
@@ -1669,5 +1773,11 @@ public class Controller {
     private void switchToUpdateAppointment() throws IOException {
         String fileName = "updateAppointment";
         Main.loadModifyAppointment(fileName);
+    }
+
+    @FXML
+    private void switchToUpcomingAppointment() throws IOException {
+        String fileName = "upcomingAppointment";
+        Main.loadUpcomingAppointment(fileName);
     }
 }

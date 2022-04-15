@@ -50,6 +50,19 @@ public class Main extends Application {
         stage.setMaxWidth(stage.getWidth());
     }
 
+    public static void loadUpcomingAppointment(String file) throws IOException {
+        Stage stage = new Stage();
+        Scene scene = new Scene(loadFXML(file), 439, 215);
+        stage.setTitle("Upcoming Appointment");
+        stage.setScene(scene);
+        stage.sizeToScene();
+        stage.show();
+        stage.setMinWidth(stage.getWidth());
+        stage.setMinHeight(stage.getHeight());
+        stage.setMaxHeight(stage.getHeight());
+        stage.setMaxWidth(stage.getWidth());
+    }
+
     public static void loadAddAppointment(String file) throws IOException {
         Stage stage = new Stage();
         Scene scene = new Scene(loadFXML(file), 424, 566);
