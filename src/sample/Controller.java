@@ -206,6 +206,8 @@ public class Controller {
     public Label appointmentErrorLabel = new Label();
     @FXML
     public Label addCustomerErrorLabel = new Label();
+    @FXML
+    public Label addAppointmentErrorLabel = new Label();
 
     //Variables
     @FXML
@@ -308,6 +310,8 @@ public class Controller {
     public ZoneId zoneId = ZoneId.systemDefault();
     @FXML
     public ZoneId utcId = ZoneId.of("UTC");
+    @FXML
+    public ZoneId estId = ZoneId.of("US/Eastern");
 
     @FXML
     public void initialize() throws SQLException {
@@ -674,11 +678,47 @@ public class Controller {
                 appointment.setDescription(resultset2.getString(3));
                 appointment.setLocation(resultset2.getString(4));
                 appointment.setType(resultset2.getString(5));
-                appointment.setStart(resultset2.getString(6));
-                appointment.setEnd(resultset2.getString(7));
-                appointment.setCreation(resultset2.getString(8));
+
+                //Format DateTime from UTC to GMT-7
+                String[] parts = resultset2.getString(6).split("(\\s)");
+                LocalDate ld = LocalDate.parse(parts[0]);
+                LocalTime lt = LocalTime.parse(parts[1]);
+                LocalDateTime ldt = LocalDateTime.of(ld, lt);
+                ZonedDateTime zdt = ZonedDateTime.ofInstant(ldt, ZoneOffset.UTC, zoneId);
+                String startDateAndTime = zdt.toLocalDate() + " " + zdt.toLocalTime();
+
+                appointment.setStart(startDateAndTime);
+
+                //Format DateTime from UTC to GMT-7
+                parts = resultset2.getString(7).split("(\\s)");
+                ld = LocalDate.parse(parts[0]);
+                lt = LocalTime.parse(parts[1]);
+                ldt = LocalDateTime.of(ld, lt);
+                zdt = ZonedDateTime.ofInstant(ldt, ZoneOffset.UTC, zoneId);
+                startDateAndTime = zdt.toLocalDate() + " " + zdt.toLocalTime();
+
+                appointment.setEnd(startDateAndTime);
+
+                //Format DateTime from UTC to GMT-7
+                parts = resultset2.getString(8).split("(\\s)");
+                ld = LocalDate.parse(parts[0]);
+                lt = LocalTime.parse(parts[1]);
+                ldt = LocalDateTime.of(ld, lt);
+                zdt = ZonedDateTime.ofInstant(ldt, ZoneOffset.UTC, zoneId);
+                startDateAndTime = zdt.toLocalDate() + " " + zdt.toLocalTime();
+
+                appointment.setCreation(startDateAndTime);
                 appointment.setCreatedBy(resultset2.getString(9));
-                appointment.setUpdated(resultset2.getString(10));
+
+                //Format DateTime from UTC to GMT-7
+                parts = resultset2.getString(10).split("(\\s)");
+                ld = LocalDate.parse(parts[0]);
+                lt = LocalTime.parse(parts[1]);
+                ldt = LocalDateTime.of(ld, lt);
+                zdt = ZonedDateTime.ofInstant(ldt, ZoneOffset.UTC, zoneId);
+                startDateAndTime = zdt.toLocalDate() + " " + zdt.toLocalTime();
+
+                appointment.setUpdated(startDateAndTime);
                 appointment.setUpdatedBy(resultset2.getString(11));
                 appointment.setCustomerID(Integer.parseInt(resultset2.getString(12)));
                 appointment.setUserID(Integer.parseInt(resultset2.getString(13)));
@@ -698,7 +738,7 @@ public class Controller {
 
         //Finds and displays the country and state the user is in via ZoneId.
         String[] zoneState = ZoneId.systemDefault().toString().split("/");
-        String values = "";
+        String values;
         if (zoneState.length == 1) {
             String[] zoneState2 = ZoneId.systemDefault().toString().split("-");
             values = zoneState2[0] + ": -" + zoneState2[1];
@@ -884,6 +924,12 @@ public class Controller {
             String startDateAndTime = utcZonedStart.toLocalDate() + " " + utcZonedStart.toLocalTime();
             ZonedDateTime utcZonedStartLocal = ZonedDateTime.ofInstant(utcZonedStart.toInstant(), zoneId);
             String startDateAndTimeLocal = utcZonedStartLocal.toLocalDate() + " " + utcZonedStartLocal.toLocalTime();
+            ZonedDateTime utcZonedStartEst = ZonedDateTime.ofInstant(utcZonedStart.toInstant(), estId);
+            LocalTime startTimeEst = utcZonedStartEst.toLocalTime();
+
+            if (startTimeEst.isBefore(LocalTime.of(8, 0)) || startTimeEst.isAfter(LocalTime.of(22, 0))) {
+                throw new Exception();
+            }
 
             LocalDateTime endDateTime = LocalDateTime.of(endDate, localEndTime);
             ZonedDateTime zonedEndDateTime = ZonedDateTime.of(endDateTime, zoneId);
@@ -891,6 +937,12 @@ public class Controller {
             String endDateAndTime = utcZonedEnd.toLocalDate() + " " + utcZonedEnd.toLocalTime();
             ZonedDateTime utcZonedEndLocal = ZonedDateTime.ofInstant(utcZonedEnd.toInstant(), zoneId);
             String endDateAndTimeLocal = utcZonedEndLocal.toLocalDate() + " " + utcZonedEndLocal.toLocalTime();
+            ZonedDateTime utcZonedEndEst = ZonedDateTime.ofInstant(utcZonedEnd.toInstant(), estId);
+            LocalTime endTimeEst = utcZonedEndEst.toLocalTime();
+
+            if (endTimeEst.isBefore(LocalTime.of(8, 0)) || endTimeEst.isAfter(LocalTime.of(22, 0))) {
+                throw new Exception();
+            }
 
             LocalDate localDate = LocalDate.now();
             LocalTime localTime = LocalTime.now();
@@ -921,6 +973,7 @@ public class Controller {
             stage.close();
         }
         catch (Exception e) {
+            addAppointmentErrorLabel.setText("Appointment must be between 8 am. and 10 pm EST.");
         }
     }
 
@@ -1156,7 +1209,6 @@ public class Controller {
             customerErrorLabel.setText("");
             Customer customer = customerTable.getSelectionModel().getSelectedItem();
 
-            //FIXME HERE MAYBE??
             String querys = "SELECT * FROM appointments WHERE Customer_ID = " + customer.getId() + ";";
 
             Connection connections = JDBC.getConnection();
@@ -1282,8 +1334,6 @@ public class Controller {
 
         try {
 
-            //FIXME VALUES GOING BACK TO UTC TIME IN TABLEVIEW
-
             appointmentTable.getSelectionModel().setCellSelectionEnabled(true);
             appointmentTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
@@ -1323,7 +1373,7 @@ public class Controller {
     }
 
     @FXML
-    public void deleteCustomer() {
+    public void deleteCustomer() throws Exception {
 
         try {
 
@@ -1341,21 +1391,29 @@ public class Controller {
 
                 if (c.getId() == customer.getId()) {
 
-                    String query = "DELETE FROM customers WHERE Customer_ID = " + customer.getId() + ";";
+                    String query = "SELECT Appointment_ID FROM appointments WHERE Customer_ID = " + c.getId() + ";";
 
                     Connection connection = JDBC.getConnection();
                     Statement statement = connection.createStatement();
-                    statement.executeUpdate(query);
+                    ResultSet rs = statement.executeQuery(query);
 
-                    customers.remove(c);
-                    break;
+                    if (rs.next()) {
+                        customerErrorLabel.setText("Remove customer's appointments first.");
+                    } else {
+
+                        String query2 = "DELETE FROM customers WHERE Customer_ID = " + customer.getId() + ";";
+                        statement.executeUpdate(query2);
+                        customers.remove(c);
+
+                        customerErrorLabel.setText("Customer successfully deleted.");
+                        break;
+                    }
                 }
             }
-            customerErrorLabel.setText("Customer successfully deleted.");
-            customerTable.refresh();
         } catch (Exception e) {
             customerErrorLabel.setText("Select a customer to be deleted.");
         }
+        customerTable.refresh();
     }
 
     @FXML
