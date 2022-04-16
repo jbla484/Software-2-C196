@@ -206,9 +206,13 @@ public class Controller {
     @FXML
     public Label appointmentErrorLabel = new Label();
     @FXML
+    public Label appointmentErrorLabel1 = new Label();
+    @FXML
     public Label addCustomerErrorLabel = new Label();
     @FXML
     public Label addAppointmentErrorLabel = new Label();
+    @FXML
+    public Label upcomingAppointmentLabel = new Label();
 
     //Variables
     @FXML
@@ -219,6 +223,10 @@ public class Controller {
     public static boolean found3 = false;
     @FXML
     public static boolean overlap = false;
+    @FXML
+    public static boolean appointment = false;
+    @FXML
+    public static boolean noAppointments = false;
     @FXML
     public String userIDs = "";
     @FXML
@@ -271,6 +279,12 @@ public class Controller {
     public static String copyCustomerDivisionID = "";
     @FXML
     public static int first = 0;
+    @FXML
+    public static String appointmentID = "";
+    @FXML
+    public static String appointmentStart = "";
+    @FXML
+    public static String appointmentEnd = "";
 
     @FXML
     public static String copyAppointmentID = "";
@@ -318,6 +332,15 @@ public class Controller {
 
     @FXML
     public void initialize() throws SQLException {
+
+        if (appointment) {
+            upcomingAppointmentLabel.setText("Appointment ID: " + appointmentID  + "\nStart Time: " + appointmentStart + "\nEnd Time: " + appointmentEnd);
+            appointment = false;
+        }
+        if (noAppointments) {
+            appointmentErrorLabel1.setText("No appointments within 15 minutes.");
+            noAppointments = false;
+        }
 
         associatedAppointmentTable.setItems(associatedAppointments);
         associatedAppointmentTable.refresh();
@@ -904,6 +927,7 @@ public class Controller {
                         LocalDateTime ldtStart = LocalDateTime.of(ldStart, ltStart);
                         ZonedDateTime zdtStart = ZonedDateTime.of(ldtStart, utcId);
                         ZonedDateTime zdtStartLocal = ZonedDateTime.ofInstant(zdtStart.toInstant(), zoneId);
+                        appointmentStart = zdtStartLocal.toLocalDate() + " " + zdtStartLocal.toLocalTime();
 
                         String[] parts2 = resultset3.getString(3).split("\\s");
                         LocalTime ltEnd = LocalTime.parse(parts2[1]);
@@ -911,23 +935,26 @@ public class Controller {
                         LocalDateTime ldtEnd = LocalDateTime.of(ldEnd, ltEnd);
                         ZonedDateTime zdtEnd = ZonedDateTime.of(ldtEnd, utcId);
                         ZonedDateTime zdtEndLocal = ZonedDateTime.ofInstant(zdtEnd.toInstant(), zoneId);
+                        appointmentEnd = zdtEndLocal.toLocalDate() + " " + zdtEndLocal.toLocalTime();
 
                         if (zdtStartLocal.isAfter(zltdNow) && zdtStartLocal.isBefore(zltdNowPlus15)) {
+                            appointmentID = resultset3.getString(1);
                             foundApp = true;
+                            break;
                         }
                     }
                 }
 
-                errorDescription.setText("Successfully logged in.");
-                switchToHome();
-
                 if (foundApp) {
                     System.out.println("appointment within 15 minutes");
+                    appointment = true;
                     switchToUpcomingAppointment();
-                    //FIXME MAKE TEXTFIELDS AND POPULATE THEM BASED ON VALUES OF APPOINTMENT
                 } else {
-                    System.out.println("no appointment");
+                    noAppointments = true;
                 }
+
+                errorDescription.setText("Successfully logged in.");
+                switchToHome();
 
                 stage.close();
             }
@@ -948,6 +975,7 @@ public class Controller {
         try {
 
             appointmentErrorLabel.setText("");
+            appointmentErrorLabel1.setText("");
 
             Stage stage = (Stage) addButton.getScene().getWindow();
 
@@ -1067,6 +1095,7 @@ public class Controller {
         try {
 
             appointmentErrorLabel.setText("");
+            appointmentErrorLabel1.setText("");
 
             Stage stage = (Stage) addButton.getScene().getWindow();
 
@@ -1269,6 +1298,7 @@ public class Controller {
             }
 
             appointmentErrorLabel.setText("");
+            appointmentErrorLabel1.setText("");
             Appointment appointment = appointmentTable.getSelectionModel().getSelectedItem();
 
             for (Appointment a : appointments) {
@@ -1740,6 +1770,7 @@ public class Controller {
     private void switchToAddAppointment() throws IOException, SQLException {
 
         appointmentErrorLabel.setText("");
+        appointmentErrorLabel1.setText("");
 
         //Find next Customer ID
         String query3 = "SELECT Appointment_ID FROM appointments;";

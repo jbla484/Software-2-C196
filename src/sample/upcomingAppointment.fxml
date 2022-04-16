@@ -5,14 +5,15 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="215.0" prefWidth="439.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="235.0" prefWidth="439.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
    <children>
       <Label layoutX="113.0" layoutY="34.0" text="Upcoming Appointment">
          <font>
             <Font size="20.0" />
          </font>
       </Label>
-      <Button fx:id="closeButton" layoutX="194.0" layoutY="176.0" mnemonicParsing="false" text="Cancel" />
-      <Label layoutX="81.0" layoutY="108.0" text="You have an appointment within 15 minutes of now!" />
+      <Button fx:id="closeButton" layoutX="187.0" layoutY="196.0" mnemonicParsing="false" text="Continue" />
+      <Label layoutX="81.0" layoutY="91.0" text="You have an appointment within 15 minutes of now!" />
+      <Label fx:id="upcomingAppointmentLabel" layoutX="69.0" layoutY="116.0" prefHeight="66.0" prefWidth="301.0" style="-fx-alignment: center;" textAlignment="CENTER" textFill="#00c8ff" wrapText="true" />
    </children>
 </Pane>

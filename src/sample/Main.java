@@ -52,7 +52,7 @@ public class Main extends Application {
 
     public static void loadUpcomingAppointment(String file) throws IOException {
         Stage stage = new Stage();
-        Scene scene = new Scene(loadFXML(file), 439, 215);
+        Scene scene = new Scene(loadFXML(file), 439, 235);
         stage.setTitle("Upcoming Appointment");
         stage.setScene(scene);
         stage.sizeToScene();

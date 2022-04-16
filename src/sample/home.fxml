@@ -85,5 +85,6 @@
       </Label>
       <Label fx:id="customerErrorLabel" layoutX="29.0" layoutY="319.0" prefHeight="17.0" prefWidth="218.0" style="-fx-alignment: center;" textAlignment="CENTER" textFill="#ff1c1c" />
       <Label fx:id="appointmentErrorLabel" layoutX="465.0" layoutY="319.0" prefHeight="17.0" prefWidth="218.0" style="-fx-alignment: center;" textAlignment="CENTER" textFill="#ff1c1c" />
+      <Label fx:id="appointmentErrorLabel1" layoutX="465.0" layoutY="319.0" prefHeight="17.0" prefWidth="218.0" style="-fx-alignment: center;" textAlignment="CENTER" textFill="#00c8ff" />
    </children>
 </Pane>
