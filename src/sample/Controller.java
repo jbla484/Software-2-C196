@@ -17,6 +17,13 @@ import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * This program allows users to login to their account to add and modify customers and their appointments.
+ *
+ * @author James Blankenship
+ * @version 1.0
+ */
+
 public class Controller {
 
     // TableViews
@@ -26,7 +33,6 @@ public class Controller {
     public TableView<Appointment> appointmentTable = new TableView<>();
     @FXML
     public TableView<Appointment> associatedAppointmentTable = new TableView<>();
-
 
     // Customer TableColumns
     @FXML
@@ -50,7 +56,7 @@ public class Controller {
     @FXML
     public TableColumn<Customer, Number> customerDivisionIDCol = new TableColumn<>("Division ID");
 
-    //Appointment TableColumns
+    // Appointment TableColumns
     @FXML
     public TableColumn<Appointment, Number> appointmentIDCol = new TableColumn<>("Appointment ID");
     @FXML
@@ -79,7 +85,6 @@ public class Controller {
     public TableColumn<Appointment, Number> appointmentUserIDCol = new TableColumn<>("User ID");
     @FXML
     public TableColumn<Appointment, Number> appointmentContactIDCol = new TableColumn<>("Contact ID");
-
     @FXML
     public TableColumn<Appointment, Number> appointmentIDCol1 = new TableColumn<>("Appointment ID");
     @FXML
@@ -109,8 +114,7 @@ public class Controller {
     @FXML
     public TableColumn<Appointment, Number> appointmentContactIDCol1 = new TableColumn<>("Contact ID");
 
-
-    //Buttons
+    // Buttons
     @FXML
     public Button closeButton = new Button();
     @FXML
@@ -118,13 +122,13 @@ public class Controller {
     @FXML
     public Button addButton = new Button();
 
-    //Login TextFields
+    // Login TextFields
     @FXML
     public TextField userID = new TextField();
     @FXML
     public TextField userPassword = new TextField();
 
-    //Customer TextFields
+    // Customer TextFields
     @FXML
     public TextField customerIDText = new TextField();
     @FXML
@@ -146,7 +150,7 @@ public class Controller {
     @FXML
     public TextField customerPhoneNumberText2 = new TextField();
 
-    //Appointment TextFields
+    // Appointment TextFields
     @FXML
     public TextField appointmentIDText = new TextField();
     @FXML
@@ -180,7 +184,7 @@ public class Controller {
     @FXML
     public TextField appointmentUserIDText2 = new TextField();
 
-    // Labels
+    // Login Labels
     @FXML
     public Label errorDescription = new Label();
     @FXML
@@ -201,6 +205,8 @@ public class Controller {
     public Label dashUsername = new Label();
     @FXML
     public Label dashPassword = new Label();
+
+    // Error Labels
     @FXML
     public Label customerErrorLabel = new Label();
     @FXML
@@ -214,7 +220,7 @@ public class Controller {
     @FXML
     public Label upcomingAppointmentLabel = new Label();
 
-    //Variables
+    // Variables
     @FXML
     public static boolean found = false;
     @FXML
@@ -222,29 +228,9 @@ public class Controller {
     @FXML
     public static boolean found3 = false;
     @FXML
-    public static boolean overlap = false;
-    @FXML
-    public static boolean appointment = false;
-    @FXML
-    public static boolean noAppointments = false;
-    @FXML
-    public String userIDs = "";
-    @FXML
-    public String userPasswords = "";
-    @FXML
     public Locale locale;
-    @FXML
-    public static int nextCustomerID = 1;
-    @FXML
-    public static int nextAppointmentID = 1;
-    @FXML
-    public String customerName = "";
-    @FXML
-    public String customerAddress = "";
-    @FXML
-    public String customerPostalCode = "";
-    @FXML
-    public String customerPhoneNumber = "";
+
+    // ObservableLists
     @FXML
     public ObservableList<String> comboBoxValues = FXCollections.observableArrayList();
     @FXML
@@ -263,6 +249,18 @@ public class Controller {
     public static ObservableList<Appointment> appointments = FXCollections.observableArrayList();
     @FXML
     public static ObservableList<Appointment> associatedAppointments = FXCollections.observableArrayList();
+
+    // Customer variables
+    @FXML
+    public static int nextCustomerID = 1;
+    @FXML
+    public String customerName = "";
+    @FXML
+    public String customerAddress = "";
+    @FXML
+    public String customerPostalCode = "";
+    @FXML
+    public String customerPhoneNumber = "";
     @FXML
     public static String copyCustomerID = "";
     @FXML
@@ -279,13 +277,16 @@ public class Controller {
     public static String copyCustomerDivisionID = "";
     @FXML
     public static int first = 0;
+
+    // Appointment variables
+    @FXML
+    public static int nextAppointmentID = 1;
     @FXML
     public static String appointmentID = "";
     @FXML
     public static String appointmentStart = "";
     @FXML
     public static String appointmentEnd = "";
-
     @FXML
     public static String copyAppointmentID = "";
     @FXML
@@ -308,9 +309,20 @@ public class Controller {
     public static String copyAppointmentUserID = "";
     @FXML
     public static String copyAppointmentContactID = "";
+    @FXML
+    public static boolean overlap = false;
+    @FXML
+    public static boolean appointment = false;
+    @FXML
+    public static boolean noAppointments = false;
 
+    // User variables
+    @FXML
+    public String userIDs = "";
+    @FXML
+    public String userPasswords = "";
 
-    //ComboBoxes
+    // ComboBoxes
     @FXML
     public ComboBox<String> countryComboBox = new ComboBox<>();
     @FXML
@@ -322,7 +334,7 @@ public class Controller {
     @FXML
     public ComboBox<String> appointmentEndTimeComboBox = new ComboBox<>();
 
-    //ZoneIds
+    // ZoneIds
     @FXML
     public ZoneId zoneId = ZoneId.systemDefault();
     @FXML
@@ -330,6 +342,10 @@ public class Controller {
     @FXML
     public ZoneId estId = ZoneId.of("US/Eastern");
 
+    /**
+     *
+     * @throws SQLException
+     */
     @FXML
     public void initialize() throws SQLException {
 
@@ -882,6 +898,11 @@ public class Controller {
         });
     }
 
+    /**
+     *
+     * @throws SQLException
+     * @throws IOException
+     */
     @FXML
     public void checkLoginButton() throws SQLException, IOException {
 
@@ -945,6 +966,9 @@ public class Controller {
                     }
                 }
 
+                errorDescription.setText("Successfully logged in.");
+                switchToHome();
+
                 if (foundApp) {
                     System.out.println("appointment within 15 minutes");
                     appointment = true;
@@ -952,9 +976,6 @@ public class Controller {
                 } else {
                     noAppointments = true;
                 }
-
-                errorDescription.setText("Successfully logged in.");
-                switchToHome();
 
                 stage.close();
             }
@@ -1048,7 +1069,7 @@ public class Controller {
                 //see if appointment matches types value
                 if (startLTD.isAfter(endsDateAndTime)) {
 
-                } else if ((startLTD.isAfter(startsDateAndTime) || startLTD.isEqual(startsDateAndTime)) && (endLTD.isBefore(endsDateAndTime) || endLTD.isEqual(endsDateAndTime) || endLTD.isAfter(endsDateAndTime))) {
+                } else if (((startLTD.isAfter(startsDateAndTime) || startLTD.isEqual(startsDateAndTime)) && (endLTD.isBefore(endsDateAndTime) || endLTD.isEqual(endsDateAndTime) || endLTD.isAfter(endsDateAndTime))) || ((startLTD.isBefore(startsDateAndTime) && endLTD.isBefore(endsDateAndTime)) || (startLTD.isBefore(startsDateAndTime) && endLTD.isAfter(endsDateAndTime)))) {
                     overlap = true;
                     throw new Exception();
                 }
@@ -1136,7 +1157,7 @@ public class Controller {
                 throw new Exception();
             }
 
-            String appointmentStartTimeAndDate = appointmentStartDates.toString() + " " + appointmentStartTime;
+            String appointmentStartTimeAndDate = appointmentStartDates + " " + appointmentStartTime;
 
             parts = appointmentStartTimeAndDate.split("\\s");
             ld = LocalDate.parse(parts[0]);
@@ -1146,7 +1167,7 @@ public class Controller {
             ZonedDateTime utcZonedLocalStart = ZonedDateTime.ofInstant(zdt.toInstant(), utcId);
             String utcStart = utcZonedLocalStart.toLocalDate() + " " + utcZonedLocalStart.toLocalTime();
 
-            String appointmentEndTimeAndDate = appointmentEndDates.toString() + " " + appointmentEndTime;
+            String appointmentEndTimeAndDate = appointmentEndDates + " " + appointmentEndTime;
 
             parts = appointmentEndTimeAndDate.split("\\s");
             ld = LocalDate.parse(parts[0]);
@@ -1180,8 +1201,8 @@ public class Controller {
 
                 //see if appointment matches types value
                 if (startLTD.isAfter(endsDateAndTime)) {
-
-                } else if (((startLTD.isAfter(startsDateAndTime) || startLTD.isEqual(startsDateAndTime)) && (endLTD.isBefore(endsDateAndTime) || endLTD.isEqual(endsDateAndTime) || endLTD.isAfter(endsDateAndTime))) || (startLTD.isBefore(startsDateAndTime) && endLTD.isBefore(endsDateAndTime))) {
+                    System.out.println();
+                } else if (((startLTD.isAfter(startsDateAndTime) || startLTD.isEqual(startsDateAndTime)) && (endLTD.isBefore(endsDateAndTime) || endLTD.isEqual(endsDateAndTime) || endLTD.isAfter(endsDateAndTime))) || ((startLTD.isBefore(startsDateAndTime) && endLTD.isBefore(endsDateAndTime)) || (startLTD.isBefore(startsDateAndTime) && endLTD.isAfter(endsDateAndTime)))) {
                     overlap = true;
                     throw new Exception();
                 }
@@ -1648,7 +1669,7 @@ public class Controller {
     }
 
     @FXML
-    public void deleteCustomer() throws Exception {
+    public void deleteCustomer() {
 
         try {
 
@@ -1733,6 +1754,9 @@ public class Controller {
         Main.loadAddCustomer(fileName);
     }
 
+    /**
+     * Clears the sort order of the TableView and sets the sort order to appointment Start column.
+     */
     @FXML
     private void sortTableViewMonthly() {
 
@@ -1744,6 +1768,9 @@ public class Controller {
         associatedAppointmentTable.sort();
     }
 
+    /**
+     * Clears the sort order of the TableView and sets the sort order to appointment Start column.
+     */
     @FXML
     private void sortTableViewWeekly() {
 
@@ -1755,6 +1782,9 @@ public class Controller {
         associatedAppointmentTable.sort();
     }
 
+    /**
+     * Clears the sort order of the TableView and sets the sort order to appointment Id column.
+     */
     @FXML
     private void sortTableViewNone() {
 
@@ -1794,18 +1824,30 @@ public class Controller {
         Main.loadAddAppointment(fileName);
     }
 
+    /**
+     * Switches to update customer GUI.
+     * @throws IOException if file is not found.
+     */
     @FXML
     private void switchToUpdateCustomer() throws IOException {
         String fileName = "updateCustomer";
         Main.loadModifyCustomer(fileName);
     }
 
+    /**
+     * Switches to update appointment GUI.
+     * @throws IOException if file is not found.
+     */
     @FXML
     private void switchToUpdateAppointment() throws IOException {
         String fileName = "updateAppointment";
         Main.loadModifyAppointment(fileName);
     }
 
+    /**
+     * Switches to upcoming appointment GUI.
+     * @throws IOException if file is not found.
+     */
     @FXML
     private void switchToUpcomingAppointment() throws IOException {
         String fileName = "upcomingAppointment";
