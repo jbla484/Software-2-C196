@@ -933,11 +933,13 @@ public class Controller {
         ResultSet resultset = statement.executeQuery(query)) {
 
             if (!resultset.next()) {
+
                 if (locale.toString().equals("fr_CA")) {
                     errorDescription.setText("Nom d'utilisateur ou mot de passe invalide.");
                 } else {
                     errorDescription.setText("Invalid username or password.");
                 }
+
                 //FIXME ERASES FIRST LINE
                 PrintWriter pw = new PrintWriter(new FileWriter(loginActivity, true));
                 pw.println("User log-in attempt: " + userIDs + ", Date: " + ld + ", Time: " + lt + " - FAIL");
@@ -954,6 +956,7 @@ public class Controller {
                 ResultSet resultset2 = statement.executeQuery(query3);
 
                 if (resultset2.next()) {
+
                     query3 = "Select Appointment_ID, Start, End FROM Appointments WHERE User_ID = " + resultset2.getString(1) + ";";
                     ResultSet resultset3 = statement.executeQuery(query3);
 
@@ -991,10 +994,12 @@ public class Controller {
                 switchToHome();
 
                 if (foundApp) {
+
                     System.out.println("appointment within 15 minutes");
                     appointment = true;
                     switchToUpcomingAppointment();
                 } else {
+
                     noAppointments = true;
                 }
 
@@ -1006,6 +1011,7 @@ public class Controller {
             ResultSet resultset2 = statement.executeQuery(query2);
 
             while (resultset2.next()) {
+
                 nextCustomerID++;
             }
         }
@@ -1731,6 +1737,11 @@ public class Controller {
             customerErrorLabel.setText("Select a customer to be deleted.");
         }
         customerTable.refresh();
+    }
+
+    @FXML
+    public void generateReport() {
+        //FIXME START HERE PART F.
     }
 
     @FXML
