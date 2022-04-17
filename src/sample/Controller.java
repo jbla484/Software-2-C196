@@ -9,9 +9,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.sql.*;
 import java.time.*;
 import java.time.temporal.ChronoUnit;
@@ -345,20 +343,19 @@ public class Controller {
     @FXML
     public ZoneId estId = ZoneId.of("US/Eastern");
 
-    // PrintWriter
-    PrintWriter loginActivity;
+    @FXML
+    public File loginActivity;
 
     /**
      *
      * @throws SQLException
      */
     @FXML
-    public void initialize() throws SQLException, FileNotFoundException {
+    public void initialize() throws SQLException, IOException {
 
         if (first == 0) {
-            loginActivity = new PrintWriter("login_activity.txt");
-            loginActivity.close();
-
+            loginActivity = new File("login_activity.txt");
+            loginActivity.createNewFile();
         }
 
         if (appointment) {
@@ -941,11 +938,17 @@ public class Controller {
                 } else {
                     errorDescription.setText("Invalid username or password.");
                 }
-                loginActivity.println("User log-in attempt: " + userIDs + ", Date: " + ld + ", Time: " + lt + " FAIL");
+                //FIXME ERASES FIRST LINE
+                PrintWriter pw = new PrintWriter(new FileWriter(loginActivity, true));
+                pw.println("User log-in attempt: " + userIDs + ", Date: " + ld + ", Time: " + lt + " - FAIL");
+                pw.close();
 
             } else {
 
-                loginActivity.println("User log-in attempt: " + userIDs + ", Date: " + ld + ", Time: " + lt + " SUCCESS");
+                //FIXME ERASES FIRST LINE
+                PrintWriter pw = new PrintWriter(new FileWriter(loginActivity, true));
+                pw.println("User log-in attempt: " + userIDs + ", Date: " + ld + ", Time: " + lt + " - SUCCESS");
+                pw.close();
 
                 String query3 = "Select User_ID FROM users WHERE User_Name = '" + userIDs + "';";
                 ResultSet resultset2 = statement.executeQuery(query3);

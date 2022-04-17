@@ -1,0 +1,4 @@
+User log-in attempt: test, Date: 2022-04-16, Time: 21:04:46.855107200 SUCCESS
+User log-in attempt: test, Date: 2022-04-16, Time: 21:08:55.101466300 SUCCESS
+User log-in attempt: te, Date: 2022-04-16, Time: 21:12:59.756352100 - FAIL
+User log-in attempt: te, Date: 2022-04-16, Time: 21:13:00.876399 - FAIL
