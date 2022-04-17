@@ -10,6 +10,11 @@ import java.util.Objects;
 
 public class Main extends Application {
 
+    /**
+     *
+     * @param primaryStage
+     * @throws Exception
+     */
     @Override
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("dashboard.fxml")));
@@ -18,11 +23,22 @@ public class Main extends Application {
         primaryStage.show();
     }
 
+    /**
+     *
+     * @param fxml
+     * @return
+     * @throws IOException
+     */
     private static Parent loadFXML(String fxml) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource(fxml + ".fxml"));
         return fxmlLoader.load();
     }
 
+    /**
+     *
+     * @param file the FXML file to be loaded.
+     * @throws IOException if the file cannot be found.
+     */
     public static void loadHome(String file) throws IOException {
         Stage stage = new Stage();
         Scene scene = new Scene(loadFXML(file), 880, 356);
@@ -36,6 +52,11 @@ public class Main extends Application {
         stage.setMaxWidth(stage.getWidth());
     }
 
+    /**
+     *
+     * @param file the FXML file to be loaded.
+     * @throws IOException if the file cannot be found.
+     */
     public static void loadAddCustomer(String file) throws IOException {
         Stage stage = new Stage();
         Scene scene = new Scene(loadFXML(file), 439, 454);
@@ -49,6 +70,11 @@ public class Main extends Application {
         stage.setMaxWidth(stage.getWidth());
     }
 
+    /**
+     *
+     * @param file the FXML file to be loaded.
+     * @throws IOException if the file cannot be found.
+     */
     public static void loadUpcomingAppointment(String file) throws IOException {
         Stage stage = new Stage();
         Scene scene = new Scene(loadFXML(file), 439, 235);
@@ -62,6 +88,11 @@ public class Main extends Application {
         stage.setMaxWidth(stage.getWidth());
     }
 
+    /**
+     *
+     * @param file the FXML file to be loaded.
+     * @throws IOException if the file cannot be found.
+     */
     public static void loadAddAppointment(String file) throws IOException {
         Stage stage = new Stage();
         Scene scene = new Scene(loadFXML(file), 424, 566);
@@ -75,6 +106,11 @@ public class Main extends Application {
         stage.setMaxWidth(stage.getWidth());
     }
 
+    /**
+     *
+     * @param file the FXML file to be loaded.
+     * @throws IOException if the file cannot be found.
+     */
     public static void loadModifyCustomer(String file) throws IOException {
         Stage stage = new Stage();
         Scene scene = new Scene(loadFXML(file), 881, 454);
@@ -88,6 +124,11 @@ public class Main extends Application {
         stage.setMaxWidth(stage.getWidth());
     }
 
+    /**
+     *
+     * @param file the FXML file to be loaded.
+     * @throws IOException if the file cannot be found.
+     */
     public static void loadModifyAppointment(String file) throws IOException {
         Stage stage = new Stage();
         Scene scene = new Scene(loadFXML(file), 424, 566);
@@ -101,7 +142,10 @@ public class Main extends Application {
         stage.setMaxWidth(stage.getWidth());
     }
 
-
+    /**
+     *
+     * @param args starting arguments.
+     */
     public static void main(String[] args) {
         JDBC.makeConnection();
 

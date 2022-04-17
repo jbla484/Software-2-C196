@@ -347,8 +347,9 @@ public class Controller {
     public File loginActivity;
 
     /**
-     *
-     * @throws SQLException
+     * Initialization method for the stages.
+     * @throws SQLException if the query fails.
+     * @throws IOException if the file does not exist.
      */
     @FXML
     public void initialize() throws SQLException, IOException {
@@ -908,9 +909,10 @@ public class Controller {
     }
 
     /**
-     *
-     * @throws SQLException
-     * @throws IOException
+     * Handles the button click action event for the login button, allowing users to query the database. If their username and password match a database user,
+     * they will be logged in. Also logs login attempts into a file.
+     * @throws SQLException if the query fails.
+     * @throws IOException if file is not found.
      */
     @FXML
     public void checkLoginButton() throws SQLException, IOException {
@@ -1017,6 +1019,9 @@ public class Controller {
         }
     }
 
+    /**
+     * Handles the add button action event for adding an appointment, and throws an exception if the query fails.
+     */
     @FXML
     public void handleAddAppointmentButtonAction() {
 
@@ -1137,6 +1142,9 @@ public class Controller {
         }
     }
 
+    /**
+     * Handles the add button action event for modifying an appointment, and throws an exception if the query fails.
+     */
     @FXML
     public void handleModifyAddAppointmentButtonAction() {
 
@@ -1291,6 +1299,10 @@ public class Controller {
         }
     }
 
+    /**
+     * Modifies the selected appointment, and throws an exception if there is no appointment selected. Might also throw an exception
+     * if the query fails.
+     */
     @FXML
     public void modifyAppointment() {
 
@@ -1333,6 +1345,10 @@ public class Controller {
         }
     }
 
+    /**
+     * Deletes the selected appointment, and throws an exception if there is no appointment selected. Might also throw an exception
+     * if the query fails.
+     */
     @FXML
     public void deleteAppointment() {
 
@@ -1370,6 +1386,9 @@ public class Controller {
         }
     }
 
+    /**
+     * Handles the add button action event for adding a customer, and throws an exception if the query fails.
+     */
     @FXML
     public void handleAddButtonAction() {
 
@@ -1491,6 +1510,9 @@ public class Controller {
         }
     }
 
+    /**
+     * Handles the add button action event for modifying a customer, and throws an exception if the query fails.
+     */
     @FXML
     public void handleModifyAddButtonAction() {
 
@@ -1582,9 +1604,12 @@ public class Controller {
                 addCustomerErrorLabel.setText("Wrong address format.");
             }
         }
-
     }
 
+    /**
+     * Modifies the selected customer, and throws an exception if there is no customer selected. Might also throw an exception
+     * if the query fails.
+     */
     @FXML
     public void modifyCustomer() {
 
@@ -1663,9 +1688,6 @@ public class Controller {
                     appointment.setContactID(Integer.parseInt(resultsets.getString(14)));
                     associatedAppointments.add(appointment);
 
-                    //Appointment a = new Appointment(Integer.parseInt(resultsets.getString(1)), resultsets.getString(2), resultsets.getString(3), resultsets.getString(4), resultsets.getString(5), resultsets.getString(6), resultsets.getString(7), resultsets.getString(8), resultsets.getString(9), resultsets.getString(10), resultsets.getString(11), Integer.parseInt(resultsets.getString(12)), Integer.parseInt(resultsets.getString(13)), Integer.parseInt(resultsets.getString(14)));
-                    //associatedAppointments.add(a);
-
                 }
             }
 
@@ -1695,6 +1717,10 @@ public class Controller {
         }
     }
 
+    /**
+     * Deletes the selected customer, and throws an exception if there is no customer selected. Might also throw an exception
+     * if the query fails.
+     */
     @FXML
     public void deleteCustomer() {
 
@@ -1739,28 +1765,46 @@ public class Controller {
         customerTable.refresh();
     }
 
+    /**
+     * Generates multiple reports based on the given requirements.
+     */
     @FXML
     public void generateReport() {
         //FIXME START HERE PART F.
     }
 
+    /**
+     * Closes the stage on a close button click.
+     */
     @FXML
     public void onCloseButtonClick() {
         Stage stage = (Stage) closeButton.getScene().getWindow();
         stage.close();
     }
 
+    /**
+     * Closes the application completely.
+     */
     @FXML
     private void closeApplication() {
         System.exit(0);
     }
 
+    /**
+     * Switches to the main GUI.
+     * @throws IOException if file is not found.
+     */
     @FXML
     private void switchToHome() throws IOException {
         String fileName = "home";
         Main.loadHome(fileName);
     }
 
+    /**
+     * Switches to the add customer GUI.
+     * @throws IOException if file is not found.
+     * @throws SQLException if the query fails.
+     */
     @FXML
     private void switchToAddCustomer() throws IOException, SQLException {
 
@@ -1828,6 +1872,11 @@ public class Controller {
         associatedAppointmentTable.sort();
     }
 
+    /**
+     * Switches to add appointment GUI.
+     * @throws IOException if file is not found.
+     * @throws SQLException if the query fails.
+     */
     @FXML
     private void switchToAddAppointment() throws IOException, SQLException {
 
