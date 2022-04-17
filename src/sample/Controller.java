@@ -8,7 +8,10 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.*;
 import java.time.*;
 import java.time.temporal.ChronoUnit;
@@ -342,12 +345,21 @@ public class Controller {
     @FXML
     public ZoneId estId = ZoneId.of("US/Eastern");
 
+    // PrintWriter
+    PrintWriter loginActivity;
+
     /**
      *
      * @throws SQLException
      */
     @FXML
-    public void initialize() throws SQLException {
+    public void initialize() throws SQLException, FileNotFoundException {
+
+        if (first == 0) {
+            loginActivity = new PrintWriter("login_activity.txt");
+            loginActivity.close();
+
+        }
 
         if (appointment) {
             upcomingAppointmentLabel.setText("Appointment ID: " + appointmentID  + "\nStart Time: " + appointmentStart + "\nEnd Time: " + appointmentEnd);
@@ -916,6 +928,9 @@ public class Controller {
 
         boolean foundApp = false;
 
+        LocalDate ld = LocalDate.now();
+        LocalTime lt = LocalTime.now();
+
         Connection connection = JDBC.getConnection();
         try (Statement statement = connection.createStatement();
         ResultSet resultset = statement.executeQuery(query)) {
@@ -926,8 +941,11 @@ public class Controller {
                 } else {
                     errorDescription.setText("Invalid username or password.");
                 }
+                loginActivity.println("User log-in attempt: " + userIDs + ", Date: " + ld + ", Time: " + lt + " FAIL");
 
             } else {
+
+                loginActivity.println("User log-in attempt: " + userIDs + ", Date: " + ld + ", Time: " + lt + " SUCCESS");
 
                 String query3 = "Select User_ID FROM users WHERE User_Name = '" + userIDs + "';";
                 ResultSet resultset2 = statement.executeQuery(query3);
