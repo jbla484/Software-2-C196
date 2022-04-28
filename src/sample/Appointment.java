@@ -1,5 +1,12 @@
 package sample;
 
+/**
+ * The appointment class which allows users to create appointments and get/set values of their appointments.
+ *
+ * @author James Blankenship
+ * @version 1.0
+ */
+
 public class Appointment {
 
     private int id;

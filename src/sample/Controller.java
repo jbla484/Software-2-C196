@@ -220,6 +220,14 @@ public class Controller {
     public Label addAppointmentErrorLabel = new Label();
     @FXML
     public Label upcomingAppointmentLabel = new Label();
+    @FXML
+    public Label monthsLabel = new Label();
+    @FXML
+    public Label contactAppointmentsLabel = new Label();
+    @FXML
+    public Label totalLoginAttempts = new Label();
+    @FXML
+    public Label appointmentHoursLabel = new Label();
 
     // Variables
     @FXML
@@ -228,6 +236,8 @@ public class Controller {
     public static boolean found2 = false;
     @FXML
     public static boolean found3 = false;
+    @FXML
+    public static boolean reports = false;
     @FXML
     public Locale locale;
 
@@ -250,6 +260,14 @@ public class Controller {
     public static ObservableList<Appointment> appointments = FXCollections.observableArrayList();
     @FXML
     public static ObservableList<Appointment> associatedAppointments = FXCollections.observableArrayList();
+    @FXML
+    public static ObservableList<String> typesCount = FXCollections.observableArrayList();
+    @FXML
+    public static ObservableList<String> contactAppointments = FXCollections.observableArrayList();
+    @FXML
+    public static ObservableList<String> monthsCount = FXCollections.observableArrayList();
+    @FXML
+    public static ObservableList<String> appointmentHours = FXCollections.observableArrayList();
 
     // Customer variables
     @FXML
@@ -273,8 +291,6 @@ public class Controller {
     @FXML
     public static String copyCustomerPhone = "";
     @FXML
-    public static String copyCustomerCountry = "";
-    @FXML
     public static String copyCustomerDivisionID = "";
     @FXML
     public static int first = 0;
@@ -296,8 +312,6 @@ public class Controller {
     public static String copyAppointmentDescription = "";
     @FXML
     public static String copyAppointmentLocation = "";
-    @FXML
-    public static String copyAppointmentContact = "";
     @FXML
     public static String copyAppointmentType = "";
     @FXML
@@ -346,13 +360,39 @@ public class Controller {
     @FXML
     public File loginActivity;
 
+    @FXML
+    public static String string = "";
+
+    @FXML
+    public static long lines = 0;
+
     /**
-     * Initialization method for the stages.
+     * Initialization method for the stages. The lambda expressions for setCellValueFactory() set the cellData and are used to make the code look cleaner and cut down total lines used. The lambda expressions for setOnMouseClicked() condenses the code required to cause an event to fire when the button is clicked, which calls the stated function and executes the needed code.
      * @throws SQLException if the query fails.
      * @throws IOException if the file does not exist.
      */
     @FXML
     public void initialize() throws SQLException, IOException {
+
+        if (reports) {
+
+            monthsLabel.setText(string);
+
+            StringBuilder output = new StringBuilder();
+            for (String s : contactAppointments) {
+                output.append(s).append("\n");
+            }
+
+            StringBuilder output2 = new StringBuilder();
+            for (String s : appointmentHours) {
+                output2.append(s).append("\n");
+            }
+            appointmentHours.clear();
+
+            appointmentHoursLabel.setText(output2.toString());
+            contactAppointmentsLabel.setText(String.format("%-20.20s %-20.20s %-15.15s %-25.25s %-25.25s %-25.25s %-12.12s \n%s", "Appointment ID", "Title", "Type", "Description", "Start Date and Time", "End Date and Time", "Customer ID", output));
+            totalLoginAttempts.setText("Total login attempts: " + lines);
+        }
 
         if (first == 0) {
             loginActivity = new File("login_activity.txt");
@@ -942,14 +982,12 @@ public class Controller {
                     errorDescription.setText("Invalid username or password.");
                 }
 
-                //FIXME ERASES FIRST LINE
                 PrintWriter pw = new PrintWriter(new FileWriter(loginActivity, true));
                 pw.println("User log-in attempt: " + userIDs + ", Date: " + ld + ", Time: " + lt + " - FAIL");
                 pw.close();
 
             } else {
 
-                //FIXME ERASES FIRST LINE
                 PrintWriter pw = new PrintWriter(new FileWriter(loginActivity, true));
                 pw.println("User log-in attempt: " + userIDs + ", Date: " + ld + ", Time: " + lt + " - SUCCESS");
                 pw.close();
@@ -997,7 +1035,6 @@ public class Controller {
 
                 if (foundApp) {
 
-                    System.out.println("appointment within 15 minutes");
                     appointment = true;
                     switchToUpcomingAppointment();
                 } else {
@@ -1100,7 +1137,8 @@ public class Controller {
 
                 //see if appointment matches types value
                 if (startLTD.isAfter(endsDateAndTime)) {
-
+                    //Do nothing
+                    System.out.println();
                 } else if (((startLTD.isAfter(startsDateAndTime) || startLTD.isEqual(startsDateAndTime)) && (endLTD.isBefore(endsDateAndTime) || endLTD.isEqual(endsDateAndTime) || endLTD.isAfter(endsDateAndTime))) || ((startLTD.isBefore(startsDateAndTime) && endLTD.isBefore(endsDateAndTime)) || (startLTD.isBefore(startsDateAndTime) && endLTD.isAfter(endsDateAndTime)))) {
                     overlap = true;
                     throw new Exception();
@@ -1156,7 +1194,6 @@ public class Controller {
             Stage stage = (Stage) addButton.getScene().getWindow();
 
             //Get input values from TextFields into variables
-            String appointmentID = appointmentIDText2.getText();
             String appointmentTitle = appointmentTitleText2.getText();
             String appointmentDescription = appointmentDescriptionText2.getText();
             String appointmentLocation = appointmentLocationText2.getText();
@@ -1767,10 +1804,239 @@ public class Controller {
 
     /**
      * Generates multiple reports based on the given requirements.
+     * @throws IOException if file is not found.
      */
     @FXML
-    public void generateReport() {
-        //FIXME START HERE PART F.
+    public void generateReport() throws IOException, SQLException {
+
+        lines = 0;
+        monthsCount.clear();
+
+        // Find total login attempts.
+        try (BufferedReader reader = new BufferedReader(new FileReader("login_activity.txt"))) {
+            while (reader.readLine() != null) lines++;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Find months count.
+        String query = "SELECT COUNT(*), Type FROM appointments WHERE Start LIKE '%-01-%' GROUP BY Type;";
+
+        Connection connection = JDBC.getConnection();
+        Statement statement = connection.createStatement();
+        ResultSet rs = statement.executeQuery(query);
+
+        while (rs.next()) {
+            monthsCount.add(String.format("%-25.25s %-23.23s %-10.10s", "January", rs.getString(2), rs.getString(1)));
+        }
+
+        query = "SELECT COUNT(*), Type FROM appointments WHERE Start LIKE '%-02-%' GROUP BY Type;";
+        rs = statement.executeQuery(query);
+
+        while (rs.next()) {
+            monthsCount.add(String.format("%-25.25s %-23.23s %-10.10s", "February", rs.getString(2), rs.getString(1)));
+        }
+
+        query = "SELECT COUNT(*), Type FROM appointments WHERE Start LIKE '%-03-%' GROUP BY Type;";
+        rs = statement.executeQuery(query);
+
+        while (rs.next()) {
+            monthsCount.add(String.format("%-25.25s %-23.23s %-10.10s", "March", rs.getString(2), rs.getString(1)));
+        }
+
+        query = "SELECT COUNT(*), Type FROM appointments WHERE Start LIKE '%-04-%' GROUP BY Type;";
+        rs = statement.executeQuery(query);
+
+        while (rs.next()) {
+            monthsCount.add(String.format("%-25.25s %-23.23s %-10.10s", "April", rs.getString(2), rs.getString(1)));
+        }
+
+        query = "SELECT COUNT(*), Type FROM appointments WHERE Start LIKE '%-05-%' GROUP BY Type;";
+        rs = statement.executeQuery(query);
+
+        while (rs.next()) {
+            monthsCount.add(String.format("%-25.25s%-23.23s%-10.10s", "May", rs.getString(2), rs.getString(1)));
+        }
+
+        query = "SELECT COUNT(*), Type FROM appointments WHERE Start LIKE '%-06-%' GROUP BY Type;";
+        rs = statement.executeQuery(query);
+
+        while (rs.next()) {
+            monthsCount.add(String.format("%-25.25s%-23.23s%-10.10s", "June", rs.getString(2), rs.getString(1)));
+        }
+
+        query = "SELECT COUNT(*), Type FROM appointments WHERE Start LIKE '%-07-%' GROUP BY Type;";
+        rs = statement.executeQuery(query);
+
+        while (rs.next()) {
+            monthsCount.add(String.format("%-25.25s%-23.23s%-10.10s", "July", rs.getString(2), rs.getString(1)));
+        }
+
+        query = "SELECT COUNT(*), Type FROM appointments WHERE Start LIKE '%-08-%' GROUP BY Type;";
+        rs = statement.executeQuery(query);
+
+        while (rs.next()) {
+            monthsCount.add(String.format("%-25.25s%-23.23s%-10.10s", "August", rs.getString(2), rs.getString(1)));
+        }
+
+        query = "SELECT COUNT(*), Type FROM appointments WHERE Start LIKE '%-09-%' GROUP BY Type;";
+        rs = statement.executeQuery(query);
+
+        while (rs.next()) {
+            monthsCount.add(String.format("%-25.25s%-23.23s%-10.10s", "September", rs.getString(2), rs.getString(1)));
+        }
+
+        query = "SELECT COUNT(*), Type FROM appointments WHERE Start LIKE '%-10-%' GROUP BY Type;";
+        rs = statement.executeQuery(query);
+
+        while (rs.next()) {
+            monthsCount.add(String.format("%-25.25s%-23.23s%-10.10s", "October", rs.getString(2), rs.getString(1)));
+        }
+
+        query = "SELECT COUNT(*), Type FROM appointments WHERE Start LIKE '%-11-%' GROUP BY Type;";
+        rs = statement.executeQuery(query);
+
+        while (rs.next()) {
+            monthsCount.add(String.format("%-25.25s%-23.23s%-10.10s", "November", rs.getString(2), rs.getString(1)));
+        }
+
+        query = "SELECT COUNT(*), Type FROM appointments WHERE Start LIKE '%-12-%' GROUP BY Type;";
+        rs = statement.executeQuery(query);
+
+        while (rs.next()) {
+            monthsCount.add(String.format("%-25.25s%-23.23s%-10.10s", "December", rs.getString(2), rs.getString(1)));
+        }
+
+        string = String.format("%-25.25s%-23.23s%-10.10s\n", "Month" , "Type", "Count");
+        for (String s : monthsCount) {
+            string += s + "\n";
+        }
+
+        // Find type count
+        query = "SELECT DISTINCT Type FROM appointments;";
+        rs = statement.executeQuery(query);
+
+        //FIXME PROBLEMS WITH WHILE
+        while (rs.next()) {
+            String type = rs.getString(1);
+            query = "SELECT COUNT(*) FROM appointments WHERE Type = '" + type + "';";
+            Statement statement2 = connection.createStatement();
+            ResultSet rs2 = statement2.executeQuery(query);
+
+            if (rs2.next()) {
+                typesCount.add(type + ": " + Integer.parseInt(rs2.getString(1)));
+            }
+        }
+
+        //Customer schedules
+        query = "SELECT * FROM appointments ORDER BY contact_ID, Start;";
+
+        Statement statement3 = connection.createStatement();
+        rs = statement3.executeQuery(query);
+
+        int prev = 0;
+        StringBuilder appointment = new StringBuilder("\n\t\t\t\t\t\t\t\t\tContact: ");
+        String appointmentHoursString = "";
+        double totalAppointmentHours = 0;
+
+        while (rs.next()) {
+            if (rs.isLast()) {
+
+                String startString = rs.getString("Start");
+                String[] stringArray = startString.split(" ");
+                LocalTime startTime = LocalTime.parse(stringArray[1]);
+                LocalDate startDate = LocalDate.parse(stringArray[0]);
+                LocalDateTime startLocalDate = LocalDateTime.of(startDate, startTime);
+
+                String endString = rs.getString("End");
+                String[] stringArray2 = endString.split(" ");
+                LocalTime endTime = LocalTime.parse(stringArray2[1]);
+                LocalDate endDate = LocalDate.parse(stringArray2[0]);
+                LocalDateTime endLocalDate = LocalDateTime.of(endDate, endTime);
+
+                totalAppointmentHours += Duration.between(startLocalDate, endLocalDate).toHours();
+                appointmentHoursString += totalAppointmentHours;
+                appointmentHours.add(appointmentHoursString);
+
+                prev = Integer.parseInt(rs.getString("Contact_ID"));
+                appointment.append(String.format("%-32.32s %-22.22s %-15.15s %-25.25s %-25.25s %-25.25s %-12.12s", rs.getString(1), rs.getString(2), rs.getString(5), rs.getString(3), rs.getString(6), rs.getString(7), rs.getString(12)));
+                contactAppointments.add(appointment.toString());
+                appointment = new StringBuilder();
+            } else if (prev == 0) {
+
+                String startString = rs.getString("Start");
+                String[] stringArray = startString.split(" ");
+                LocalTime startTime = LocalTime.parse(stringArray[1]);
+                LocalDate startDate = LocalDate.parse(stringArray[0]);
+                LocalDateTime startLocalDate = LocalDateTime.of(startDate, startTime);
+
+                String endString = rs.getString("End");
+                String[] stringArray2 = endString.split(" ");
+                LocalTime endTime = LocalTime.parse(stringArray2[1]);
+                LocalDate endDate = LocalDate.parse(stringArray2[0]);
+                LocalDateTime endLocalDate = LocalDateTime.of(endDate, endTime);
+
+                totalAppointmentHours += Duration.between(startLocalDate, endLocalDate).toHours();
+
+                prev = Integer.parseInt(rs.getString("Contact_ID"));
+                appointment.append(comboBoxValuesContacts.get(prev - 1)).append("\n\n").append(String.format("%-32.32s%-22.22s%-15.15s%-25.25s%-30.30s%-30.30s%-15.15s", rs.getString(1), rs.getString(2), rs.getString(5), rs.getString(3), rs.getString(6), rs.getString(7), rs.getString(12)));
+                appointmentHoursString = comboBoxValuesContacts.get(prev - 1) + ": ";
+                contactAppointments.add(appointment.toString());
+                appointment = new StringBuilder();
+            } else if (prev == Integer.parseInt(rs.getString("Contact_ID"))) {
+
+                String startString = rs.getString("Start");
+                String[] stringArray = startString.split(" ");
+                LocalTime startTime = LocalTime.parse(stringArray[1]);
+                LocalDate startDate = LocalDate.parse(stringArray[0]);
+                LocalDateTime startLocalDate = LocalDateTime.of(startDate, startTime);
+
+                String endString = rs.getString("End");
+                String[] stringArray2 = endString.split(" ");
+                LocalTime endTime = LocalTime.parse(stringArray2[1]);
+                LocalDate endDate = LocalDate.parse(stringArray2[0]);
+                LocalDateTime endLocalDate = LocalDateTime.of(endDate, endTime);
+
+                totalAppointmentHours += Duration.between(startLocalDate, endLocalDate).toHours();
+
+                appointment.append(String.format("%-32.32s%-22.22s%-15.15s%-25.25s%-30.30s%-30.30s%-15.15s", rs.getString(1), rs.getString(2), rs.getString(5), rs.getString(3), rs.getString(6), rs.getString(7), rs.getString(12)));
+                contactAppointments.add(appointment.toString());
+                appointment = new StringBuilder();
+            } else {
+
+                //FIXME DO SOMETHING WITH TOTAL APPOINTMENT HOURS
+                appointmentHoursString += totalAppointmentHours;
+                appointmentHours.add(appointmentHoursString);
+
+                totalAppointmentHours = 0;
+
+                String startString = rs.getString("Start");
+                String[] stringArray = startString.split(" ");
+                LocalTime startTime = LocalTime.parse(stringArray[1]);
+                LocalDate startDate = LocalDate.parse(stringArray[0]);
+                LocalDateTime startLocalDate = LocalDateTime.of(startDate, startTime);
+
+                String endString = rs.getString("End");
+                String[] stringArray2 = endString.split(" ");
+                LocalTime endTime = LocalTime.parse(stringArray2[1]);
+                LocalDate endDate = LocalDate.parse(stringArray2[0]);
+                LocalDateTime endLocalDate = LocalDateTime.of(endDate, endTime);
+
+                totalAppointmentHours += Duration.between(startLocalDate, endLocalDate).toHours();
+
+                appointment = new StringBuilder("\n\t\t\t\t\t\t\t\t\tContact: ");
+                prev = Integer.parseInt(rs.getString("Contact_ID"));
+                appointment.append(comboBoxValuesContacts.get(prev - 1)).append("\n\n").append(String.format("%-32.32s%-22.22s%-15.15s%-25.25s%-30.30s%-30.30s%-15.15s", rs.getString(1), rs.getString(2), rs.getString(5), rs.getString(3), rs.getString(6), rs.getString(7), rs.getString(12)));
+                appointmentHoursString = comboBoxValuesContacts.get(prev - 1) + ": ";
+                contactAppointments.add(appointment.toString());
+                appointment = new StringBuilder();
+            }
+        }
+
+
+        reports = true;
+        String fileName = "reports";
+        Main.loadReports(fileName);
     }
 
     /**

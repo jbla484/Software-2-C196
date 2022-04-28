@@ -10,11 +10,13 @@ This application was created by James Blankenship on April 4th, 2022. It's curre
 IDE Version: IntelliJ Community 2020.01
 Java Version: Java SE 17.0.1
 JavaFX Version: JavaFX-SDK-11.0.2
+MySQL Driver Version: mysql-connector-java-8.0.25
 
 You may run the program in an IDE of your choice once you have the specified Java and JavaFX version
 installed on your computer. Open the IDE and either run the program from the main class in Main.java
 or find the run button somewhere near the header of the IDE.
 
-•  a description of the additional report of your choice you ran in part A3f
-•  the MySQL Connector driver version number, including the update number (e.g., mysql-connector-java-8.1.23)
+I added a report that shows how many scheduled hours each contact has. This will hopefully help them
+plan better for their week/month. I also added total login attempts to the reports, which administrators
+could use to monitor their employees accounts for security (Brute force password attacks).
 

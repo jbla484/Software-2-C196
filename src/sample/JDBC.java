@@ -4,6 +4,13 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+/**
+ * Provided database connector class that includes methods to connect to the database and make statements.
+ *
+ * @author James Blankenship
+ * @version 1.0
+ */
+
 public class JDBC {
  private static final String protocol = "jdbc";
      private static final String vendor = ":mysql:";

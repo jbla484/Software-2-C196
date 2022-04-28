@@ -1,5 +1,12 @@
 package sample;
 
+/**
+ * The customer class which allows users to create customers and get/set values of their customers.
+ *
+ * @author James Blankenship
+ * @version 1.0
+ */
+
 public class Customer {
 
     private int customerID;
