@@ -270,6 +270,8 @@ public class Controller {
     public static ObservableList<String> monthsCount = FXCollections.observableArrayList();
     @FXML
     public static ObservableList<String> appointmentHours = FXCollections.observableArrayList();
+    @FXML
+    public static ObservableList<String> userNames = FXCollections.observableArrayList();
 
     // Customer variables
     @FXML
@@ -364,6 +366,8 @@ public class Controller {
 
     @FXML
     public static String string = "";
+    @FXML
+    public static String createdByName = "";
 
     @FXML
     public static long lines = 0;
@@ -976,13 +980,23 @@ public class Controller {
         //Get user input from TextField and save data in variables.
         userIDs = userID.getText();
         userPasswords = userPassword.getText();
+        createdByName = userIDs;
 
         String query = "Select * FROM users WHERE User_Name = '" + userIDs + "' AND Password = '" + userPasswords + "';";
-
         boolean foundApp = false;
 
         LocalDate ld = LocalDate.now();
         LocalTime lt = LocalTime.now();
+
+        String query7 = "Select * FROM users;";
+
+        Connection connection7 = JDBC.getConnection();
+        Statement statement7 = connection7.createStatement();
+        ResultSet resultset7 = statement7.executeQuery(query7);
+
+        if (resultset7.next()) {
+            userNames.add(resultset7.getString(2));
+        }
 
         Connection connection = JDBC.getConnection();
         try (Statement statement = connection.createStatement();
@@ -1165,7 +1179,7 @@ public class Controller {
             ZonedDateTime utcZonedLocal2 = ZonedDateTime.ofInstant(utcZonedLocal.toInstant(), zoneId);
             String creationDateLocal = utcZonedLocal2.toLocalDate() + " " + utcZonedLocal2.toLocalTime();
 
-            String createdBy = "James";
+            String createdBy = createdByName;
 
             String query2 = "INSERT INTO appointments VALUES ('" + appointmentID + "', '" + appointmentTitle + "', '" +
                     appointmentDescription + "', '" + appointmentLocation + "', '" + appointmentType + "', '" +
@@ -1311,7 +1325,7 @@ public class Controller {
             ZonedDateTime utcZonedLocal2 = ZonedDateTime.ofInstant(utcZonedLocal.toInstant(), zoneId);
             String nowLocal = utcZonedLocal2.toLocalDate() + " " + utcZonedLocal2.toLocalTime();
 
-            String query = "UPDATE appointments SET Title = '" + appointmentTitle + "', Description = '" + appointmentDescription + "', Location = '" + appointmentLocation + "', Type = '" + appointmentType + "', Start = '" + utcStart + "', End = '" + utcEnd + "', Last_Update = '" + now + "', Customer_ID = '" + appointmentCustomerID + "', User_ID = '" + appointmentUserID + "', Contact_ID = '" + contactID + "' WHERE Appointment_ID = " + appointmentIDText2.getText() + ";";
+            String query = "UPDATE appointments SET Title = '" + appointmentTitle + "', Description = '" + appointmentDescription + "', Location = '" + appointmentLocation + "', Type = '" + appointmentType + "', Start = '" + utcStart + "', End = '" + utcEnd + "', Last_Update = '" + now + "', Last_Updated_By = '" + createdByName + "', Customer_ID = '" + appointmentCustomerID + "', User_ID = '" + appointmentUserID + "', Contact_ID = '" + contactID + "' WHERE Appointment_ID = " + appointmentIDText2.getText() + ";";
 
             statement.executeUpdate(query);
 
@@ -1319,7 +1333,6 @@ public class Controller {
                 if (String.valueOf(a.getID()).equals(appointmentIDText2.getText())) {
                     String creation = a.getCreation();
                     String createdBy = a.getCreatedBy();
-                    String updatedBy = a.getUpdatedBy();
                     appointments.remove(a);
                     a.setTitle(appointmentTitle);
                     a.setDescription(appointmentDescription);
@@ -1330,7 +1343,7 @@ public class Controller {
                     a.setCreation(creation);
                     a.setCreatedBy(createdBy);
                     a.setUpdated(nowLocal);
-                    a.setUpdatedBy(updatedBy);
+                    a.setUpdatedBy(createdByName);
                     a.setCustomerID(Integer.parseInt(appointmentCustomerID));
                     a.setUserID(Integer.parseInt(appointmentUserID));
                     a.setContactID(contactID);
@@ -1527,7 +1540,7 @@ public class Controller {
             ZonedDateTime utcZonedLocal2 = ZonedDateTime.ofInstant(utcZonedLocal.toInstant(), zoneId);
             String nowLocal = utcZonedLocal2.toLocalDate() + " " + utcZonedLocal2.toLocalTime();
 
-            String createdBy = "James";
+            String createdBy = createdByName;
             String divisionID = "";
 
             //Execute a statement to get a division id matching our first-level-division value.
@@ -1654,7 +1667,7 @@ public class Controller {
             ZonedDateTime utcZonedLocal2 = ZonedDateTime.ofInstant(utcZonedLocal.toInstant(), zoneId);
             String nowLocal = utcZonedLocal2.toLocalDate() + " " + utcZonedLocal2.toLocalTime();
 
-            String query2 = "UPDATE customers SET Customer_Name = '" + customerName + "', Address = '" + customerAddress + "', Postal_Code = '" + customerPostalCode + "', Phone = '" + customerPhoneNumber + "', Last_Update = '" + now + "', Division_ID = '" + customerFLD + "' WHERE Customer_ID = " + customerIDText2.getText() + ";";
+            String query2 = "UPDATE customers SET Customer_Name = '" + customerName + "', Address = '" + customerAddress + "', Postal_Code = '" + customerPostalCode + "', Phone = '" + customerPhoneNumber + "', Last_Update = '" + now + "', Last_Updated_By = '" + createdByName + "', Division_ID = '" + customerFLD + "' WHERE Customer_ID = " + customerIDText2.getText() + ";";
             statement.executeUpdate(query2);
 
             for (Customer c : customers) {
@@ -1670,7 +1683,7 @@ public class Controller {
                     c.setCreationDate(creation);
                     c.setCreatedBy(createdBy);
                     c.setLastUpdate(nowLocal);
-                    c.setLastUpdatedBy(createdBy);
+                    c.setLastUpdatedBy(createdByName);
                     c.setDivisionID(Integer.parseInt(customerFLD));
                     c.setCountry(customerCountry);
                     customers.add(c);
