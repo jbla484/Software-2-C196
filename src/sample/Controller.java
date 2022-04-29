@@ -19,7 +19,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * This program allows users to login to their account to add and modify customers and their appointments.
+ * The controller class which allows users to navigate around the application's windows.
  *
  * @author James Blankenship
  * @version 1.0
