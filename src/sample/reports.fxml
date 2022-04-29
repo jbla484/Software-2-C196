@@ -37,7 +37,7 @@
                         </AnchorPane>
                     </content>
                   </ScrollPane>
-                  <Label fx:id="appointmentHoursLabel" layoutX="386.0" layoutY="157.0" text="Label" />
+                  <Label fx:id="appointmentHoursLabel" layoutX="396.0" layoutY="157.0" text="Label" />
                   <Label layoutX="317.0" layoutY="119.0" text="Total number of scheduled hours per contact:" />
                </children>
             </AnchorPane>

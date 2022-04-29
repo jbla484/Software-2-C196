@@ -19,6 +19,7 @@ public class Customer {
     private String customerLastUpdate;
     private String customerLastUpdatedBy;
     private int customerDivisionID;
+    private String customerCountry;
 
     /**
      * The default constructor
@@ -42,7 +43,7 @@ public class Customer {
      */
     Customer(int customerID, String customerName, String customerAddress, String customerPostalCode,
              String customerPhoneNumber, String customerCreationDate, String customerCreatedBy,
-             String customerLastUpdate, String customerLastUpdatedBy, int customerDivisionID) {
+             String customerLastUpdate, String customerLastUpdatedBy, int customerDivisionID, String customerCountry) {
         this.customerID = customerID;
         this.customerName = customerName;
         this.customerAddress = customerAddress;
@@ -53,6 +54,7 @@ public class Customer {
         this.customerLastUpdate = customerLastUpdate;
         this.customerLastUpdatedBy = customerLastUpdatedBy;
         this.customerDivisionID = customerDivisionID;
+        this.customerCountry = customerCountry;
     }
 
     /**
@@ -213,5 +215,19 @@ public class Customer {
      */
     public void setDivisionID(int customerDivisionID) {
         this.customerDivisionID = customerDivisionID;
+    }
+
+    /**
+     * Get the customer country of the customer object.
+     */
+    public String getCountry() {
+        return customerCountry;
+    }
+
+    /**
+     * Set the customer country of the customer object.
+     */
+    public void setCountry(String customerCountry) {
+        this.customerCountry = customerCountry;
     }
 }

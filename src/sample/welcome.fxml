@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Font?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="344.0" prefWidth="684.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+   <children>
+      <Label fx:id="dashTitle" layoutX="34.0" layoutY="29.0" prefHeight="30.0" prefWidth="313.0" style="-fx-alignment: center;" text="James' Scheduling Software" textAlignment="CENTER">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Label>
+      <Label fx:id="dashTitle2" layoutX="457.0" layoutY="29.0" prefHeight="30.0" prefWidth="161.0" style="-fx-alignment: center;" text="Login">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Label>
+      <Label fx:id="dashUsername" layoutX="420.0" layoutY="112.0" prefHeight="17.0" prefWidth="99.0" text="Username:" />
+      <TextField fx:id="userID" layoutX="519.0" layoutY="108.0" prefHeight="25.0" prefWidth="133.0" />
+      <TextField fx:id="userPassword" layoutX="519.0" layoutY="157.0" prefHeight="25.0" prefWidth="133.0" />
+      <Label fx:id="dashPassword" layoutX="420.0" layoutY="161.0" prefHeight="17.0" prefWidth="99.0" text="Password:" />
+      <Button fx:id="loginButton" layoutX="470.0" layoutY="297.0" mnemonicParsing="false" onAction="#checkLoginButton" text="Login" />
+      <Line endX="88.0" endY="233.5" layoutX="302.0" layoutY="121.0" startX="88.0" startY="-121.0" />
+      <Label fx:id="dashLabel1" layoutX="27.0" layoutY="73.0" prefHeight="71.0" prefWidth="327.0" text="This application allows it's users to login to their account from a database, determining the user's country and displaying a calander of all scheduled appointments. " textAlignment="CENTER" wrapText="true" />
+      <Label fx:id="locationText" layoutX="457.0" layoutY="191.0" prefHeight="45.0" prefWidth="161.0" style="-fx-alignment: center;" text="Location: " />
+      <Label fx:id="dashLabel2" layoutX="26.0" layoutY="144.0" prefHeight="124.0" prefWidth="327.0" text="The application also allows user's to add, delete, and update customer records and appointments. The users can view appointment schedules in a month to month or week to week fashion. The application alerts it's users when there's an appointment within 15 minutes of the user's log-in." textAlignment="CENTER" wrapText="true" />
+      <Button fx:id="closeButton" layoutX="563.0" layoutY="297.0" mnemonicParsing="false" text="Close" />
+      <Label fx:id="errorDescription" layoutX="433.0" layoutY="236.0" prefHeight="39.0" prefWidth="209.0" style="-fx-alignment: center;" textAlignment="CENTER" textFill="#ff1e1e" wrapText="true" />
+      <Label fx:id="dashLabel3" layoutX="34.0" layoutY="277.0" prefHeight="39.0" prefWidth="327.0" text="If you have any questions or concerns feel free to contact me at Jbla484@wgu.edu." textAlignment="CENTER" wrapText="true" />
+      <Label fx:id="dashLabel4" layoutX="26.0" layoutY="151.0" prefHeight="124.0" prefWidth="327.0" textAlignment="CENTER" wrapText="true" />
+   </children>
+</Pane>

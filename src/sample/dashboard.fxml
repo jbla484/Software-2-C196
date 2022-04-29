@@ -2,35 +2,87 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.Pane?>
-<?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="328.0" prefWidth="627.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="356.0" prefWidth="880.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
    <children>
-      <Label fx:id="dashTitle" layoutX="22.0" layoutY="29.0" prefHeight="30.0" prefWidth="313.0" style="-fx-alignment: center;" text="James' Scheduling Software" textAlignment="CENTER">
+      <Label fx:id="errorDescription" layoutX="376.0" layoutY="235.0" prefHeight="17.0" prefWidth="209.0" style="-fx-alignment: center;" textFill="#ff1e1e" />
+      <TableView fx:id="customerTable" layoutX="29.0" layoutY="94.0" prefHeight="207.0" prefWidth="385.0">
+        <columns>
+          <TableColumn fx:id="customerIDCol" text="Customer ID" />
+          <TableColumn fx:id="customerNameCol" minWidth="0.0" prefWidth="124.0" text="Customer Name" />
+            <TableColumn fx:id="customerAddressCol" prefWidth="163.0" text="Address" />
+            <TableColumn fx:id="customerPostalCol" text="Postal Code" />
+            <TableColumn fx:id="customerPhoneCol" prefWidth="124.0" text="Phone Number" />
+            <TableColumn fx:id="customerCreationDateCol" minWidth="9.0" prefWidth="126.0" text="Creation Date" />
+            <TableColumn fx:id="customerCreatedByCol" minWidth="0.0" prefWidth="76.0" text="Created By" />
+            <TableColumn fx:id="customerLastUpdateCol" minWidth="7.0" prefWidth="119.0" text="Last Update" />
+            <TableColumn fx:id="customerLastUpdatedByCol" minWidth="0.0" prefWidth="105.0" text="Last Updated By" />
+            <TableColumn fx:id="customerDivisionIDCol" minWidth="5.0" prefWidth="72.0" text="Division ID" />
+            <TableColumn fx:id="customerCountryCol" prefWidth="115.0" text="Country" />
+        </columns>
+      </TableView>
+      <Label layoutX="175.0" layoutY="49.0" text="Customers">
          <font>
             <Font size="20.0" />
          </font>
       </Label>
-      <Label fx:id="dashTitle2" layoutX="412.0" layoutY="29.0" prefHeight="30.0" prefWidth="161.0" style="-fx-alignment: center;" text="Login">
+      <Button layoutX="254.0" layoutY="315.0" mnemonicParsing="false" onAction="#switchToAddCustomer" text="Add" />
+      <Button layoutX="301.0" layoutY="315.0" mnemonicParsing="false" onAction="#modifyCustomer" text="Modify" />
+      <Button layoutX="363.0" layoutY="315.0" mnemonicParsing="false" onAction="#deleteCustomer" text="Delete" />
+      <MenuBar layoutY="2.0" prefHeight="25.0" prefWidth="880.0">
+        <menus>
+          <Menu mnemonicParsing="false" text="File">
+            <items>
+              <MenuItem mnemonicParsing="false" onAction="#closeApplication" text="Close" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Print">
+            <items>
+              <MenuItem mnemonicParsing="false" onAction="#generateReport" text="Reports" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Help">
+            <items>
+              <MenuItem mnemonicParsing="false" onAction="#switchToAbout" text="About" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+      <TableView fx:id="appointmentTable" layoutX="465.0" layoutY="94.0" prefHeight="207.0" prefWidth="385.0">
+         <columns>
+            <TableColumn fx:id="appointmentIDCol" prefWidth="101.0" text="Appointment ID" />
+            <TableColumn fx:id="appointmentTitleCol" minWidth="0.0" prefWidth="100.0" text="Title" />
+            <TableColumn fx:id="appointmentDescriptionCol" prefWidth="131.0" text="Description" />
+            <TableColumn fx:id="appointmentLocationCol" prefWidth="107.0" text="Location" />
+            <TableColumn fx:id="appointmentTypeCol" prefWidth="118.0" text="Type" />
+            <TableColumn fx:id="appointmentStartCol" minWidth="9.0" prefWidth="135.0" text="Start" />
+            <TableColumn fx:id="appointmentEndCol" minWidth="0.0" prefWidth="136.0" text="End" />
+            <TableColumn fx:id="appointmentCreationCol" minWidth="7.0" prefWidth="140.0" text="Creation Date" />
+            <TableColumn fx:id="appointmentCreatedByCol" minWidth="7.0" prefWidth="89.0" text="Created By" />
+            <TableColumn fx:id="appointmentUpdatedCol" minWidth="7.0" prefWidth="123.0" text="Last Update" />
+            <TableColumn fx:id="appointmentUpdatedByCol" minWidth="0.0" prefWidth="104.0" text="Last Updated By" />
+            <TableColumn fx:id="appointmentCustomerIDCol" minWidth="0.0" prefWidth="82.0" text="Customer ID" />
+            <TableColumn fx:id="appointmentUserIDCol" minWidth="0.0" prefWidth="51.0" text="User ID" />
+            <TableColumn fx:id="appointmentContactIDCol" minWidth="0.0" prefWidth="69.0" text="Contact ID" />
+         </columns>
+      </TableView>
+      <Button layoutX="690.0" layoutY="315.0" mnemonicParsing="false" onAction="#switchToAddAppointment" text="Add" />
+      <Button layoutX="738.0" layoutY="315.0" mnemonicParsing="false" onAction="#modifyAppointment" text="Modify" />
+      <Button layoutX="800.0" layoutY="315.0" mnemonicParsing="false" onAction="#deleteAppointment" text="Delete" />
+      <Label layoutX="596.0" layoutY="49.0" text="Appointments">
          <font>
             <Font size="20.0" />
          </font>
       </Label>
-      <Label fx:id="dashUsername" layoutX="373.0" layoutY="112.0" prefHeight="17.0" prefWidth="99.0" text="Username:" />
-      <TextField fx:id="userID" layoutX="477.0" layoutY="108.0" prefHeight="25.0" prefWidth="133.0" />
-      <TextField fx:id="userPassword" layoutX="477.0" layoutY="157.0" prefHeight="25.0" prefWidth="133.0" />
-      <Label fx:id="dashPassword" layoutX="373.0" layoutY="161.0" prefHeight="17.0" prefWidth="99.0" text="Password:" />
-      <Button fx:id="loginButton" layoutX="423.0" layoutY="284.0" mnemonicParsing="false" onAction="#checkLoginButton" text="Login" />
-      <Line endX="57.0" endY="207.0" layoutX="302.0" layoutY="121.0" startX="57.0" startY="-121.0" />
-      <Label fx:id="dashLabel1" layoutX="15.0" layoutY="73.0" prefHeight="71.0" prefWidth="327.0" text="This application allows it's users to login to their account from a database, determining the user's country and displaying a calander of all scheduled appointments. " textAlignment="CENTER" wrapText="true" />
-      <Label fx:id="locationText" layoutX="412.0" layoutY="193.0" prefHeight="45.0" prefWidth="161.0" style="-fx-alignment: center;" text="Location: " />
-      <Label fx:id="dashLabel2" layoutX="15.0" layoutY="144.0" prefHeight="124.0" prefWidth="327.0" text="The application also allows user's to add, delete, and update customer records and appointments. The users can view appointment schedules in a month to month or week to week fashion. The application alerts it's users when there's an appointment within 15 minutes of the user's log-in." textAlignment="CENTER" wrapText="true" />
-      <Button fx:id="closeButton" layoutX="521.0" layoutY="284.0" mnemonicParsing="false" text="Close" />
-      <Label fx:id="errorDescription" layoutX="388.0" layoutY="235.0" prefHeight="39.0" prefWidth="209.0" style="-fx-alignment: center;" textAlignment="CENTER" textFill="#ff1e1e" wrapText="true" />
-      <Label fx:id="dashLabel3" layoutX="15.0" layoutY="277.0" prefHeight="39.0" prefWidth="327.0" text="If you have any questions or concerns feel free to contact me at Jbla484@wgu.edu." textAlignment="CENTER" wrapText="true" />
-      <Label fx:id="dashLabel4" layoutX="15.0" layoutY="150.0" prefHeight="124.0" prefWidth="327.0" textAlignment="CENTER" wrapText="true" />
+      <Label fx:id="customerErrorLabel" layoutX="29.0" layoutY="319.0" prefHeight="17.0" prefWidth="218.0" style="-fx-alignment: center;" textAlignment="CENTER" textFill="#ff1c1c" />
+      <Label fx:id="appointmentErrorLabel" layoutX="465.0" layoutY="307.0" prefHeight="41.0" prefWidth="218.0" style="-fx-alignment: center;" textAlignment="CENTER" textFill="#ff1c1c" wrapText="true" />
+      <Label fx:id="appointmentErrorLabel1" layoutX="465.0" layoutY="319.0" prefHeight="17.0" prefWidth="218.0" style="-fx-alignment: center;" textAlignment="CENTER" textFill="#00c8ff" />
    </children>
 </Pane>

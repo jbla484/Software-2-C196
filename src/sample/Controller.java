@@ -56,6 +56,8 @@ public class Controller {
     public TableColumn<Customer, String> customerLastUpdatedByCol = new TableColumn<>("Last Updated By");
     @FXML
     public TableColumn<Customer, Number> customerDivisionIDCol = new TableColumn<>("Division ID");
+    @FXML
+    public TableColumn<Customer, String> customerCountryCol = new TableColumn<>("Country");
 
     // Appointment TableColumns
     @FXML
@@ -388,6 +390,7 @@ public class Controller {
                 output2.append(s).append("\n");
             }
             appointmentHours.clear();
+            contactAppointments.clear();
 
             appointmentHoursLabel.setText(output2.toString());
             contactAppointmentsLabel.setText(String.format("%-20.20s %-20.20s %-15.15s %-25.25s %-25.25s %-25.25s %-12.12s \n%s", "Appointment ID", "Title", "Type", "Description", "Start Date and Time", "End Date and Time", "Customer ID", output));
@@ -396,7 +399,8 @@ public class Controller {
 
         if (first == 0) {
             loginActivity = new File("login_activity.txt");
-            loginActivity.createNewFile();
+            boolean created = loginActivity.createNewFile();
+            System.out.println("File created: " + created);
         }
 
         if (appointment) {
@@ -541,6 +545,7 @@ public class Controller {
         customerLastUpdateCol.setCellValueFactory(new PropertyValueFactory<>("updated"));
         customerLastUpdatedByCol.setCellValueFactory(new PropertyValueFactory<>("updated by"));
         customerDivisionIDCol.setCellValueFactory(new PropertyValueFactory<>("division"));
+        customerCountryCol.setCellValueFactory(new PropertyValueFactory<>("country"));
 
         appointmentIDCol.setCellValueFactory(new PropertyValueFactory<>("id"));
         appointmentTitleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
@@ -593,6 +598,8 @@ public class Controller {
                 new SimpleStringProperty(cellData.getValue().getLastUpdatedBy()));
         customerDivisionIDCol.setCellValueFactory(cellData ->
                 new SimpleIntegerProperty(cellData.getValue().getDivisionID()));
+        customerCountryCol.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getCountry()));
 
         appointmentIDCol.setCellValueFactory(cellData ->
                 new SimpleIntegerProperty(cellData.getValue().getID()));
@@ -692,6 +699,13 @@ public class Controller {
                     customer.setLastUpdate(startDateAndTime);
                     customer.setLastUpdatedBy(resultset.getString(9));
                     customer.setDivisionID(resultset.getInt(10));
+                    if (resultset.getInt(10) < 60) {
+                        customer.setCountry("United States");
+                    } else if (resultset.getInt(10) < 100) {
+                        customer.setCountry("Canada");
+                    } else {
+                        customer.setCountry("United Kingdom");
+                    }
                     customers.add(customer);
                 }
                 customerTable.setItems(customers);
@@ -1115,33 +1129,41 @@ public class Controller {
                 throw new Exception();
             }
 
-            String query = "SELECT Start, End FROM Appointments WHERE Customer_ID = " + customerID + ";";
+            String query = "SELECT Start, End FROM appointments WHERE Customer_ID = " + customerID + " AND Start LIKE '" + utcZonedStart.toLocalDate() + "%';";
 
             Connection connection = JDBC.getConnection();
             Statement statement = connection.createStatement();
             ResultSet rs = statement.executeQuery(query);
 
             while (rs.next()) {
+
                 String[] parts = rs.getString(1).split("\\s");
                 LocalTime ltStart = LocalTime.parse(parts[1]);
                 LocalDate ldStart = LocalDate.parse(parts[0]);
+                LocalDateTime startsDateAndTime = LocalDateTime.of(ldStart, ltStart);
+
                 String[] parts2 = rs.getString(2).split("\\s");
                 LocalTime ltEnd = LocalTime.parse(parts2[1]);
                 LocalDate ldEnd = LocalDate.parse(parts2[0]);
+                LocalDateTime endsDateAndTime = LocalDateTime.of(ldEnd, ltEnd);
 
                 //appointment times and dates
-                LocalDateTime startsDateAndTime = LocalDateTime.of(ldStart, ltStart);
-                LocalDateTime endsDateAndTime = LocalDateTime.of(ldEnd, ltEnd);
                 LocalDateTime startLTD = LocalDateTime.of(utcZonedStart.toLocalDate(), utcZonedStart.toLocalTime());
                 LocalDateTime endLTD = LocalDateTime.of(utcZonedEnd.toLocalDate(), utcZonedEnd.toLocalTime());
 
+                //Both same start time in UTC
+                System.out.println("From database: " + startsDateAndTime);
+                System.out.println("From input via UTC time: " + startLTD);
+                System.out.println("From database: " + endsDateAndTime);
+                System.out.println("From input via UTC time: " + endLTD);
+
                 //see if appointment matches types value
-                if (startLTD.isAfter(endsDateAndTime)) {
-                    //Do nothing
-                    System.out.println();
-                } else if (((startLTD.isAfter(startsDateAndTime) || startLTD.isEqual(startsDateAndTime)) && (endLTD.isBefore(endsDateAndTime) || endLTD.isEqual(endsDateAndTime) || endLTD.isAfter(endsDateAndTime))) || ((startLTD.isBefore(startsDateAndTime) && endLTD.isBefore(endsDateAndTime)) || (startLTD.isBefore(startsDateAndTime) && endLTD.isAfter(endsDateAndTime)))) {
+                if ((startLTD.isAfter(startsDateAndTime) && startLTD.isBefore(endsDateAndTime)) || (startLTD.isEqual(startsDateAndTime) || endLTD.isEqual(endsDateAndTime)) ||  (startLTD.isBefore(startsDateAndTime) && endLTD.isAfter(endsDateAndTime))) {
                     overlap = true;
                     throw new Exception();
+                } else if (startLTD.isAfter(endsDateAndTime) || (startLTD.isBefore(startsDateAndTime) && endLTD.isBefore(startsDateAndTime))) {
+                    //Do nothing
+                    System.out.println();
                 }
             }
 
@@ -1401,13 +1423,14 @@ public class Controller {
             appointmentErrorLabel.setText("");
             appointmentErrorLabel1.setText("");
             Appointment appointment = appointmentTable.getSelectionModel().getSelectedItem();
+            String appointmentType = "";
 
             for (Appointment a : appointments) {
 
                 if (a.getID() == appointment.getID()) {
 
                     String query = "DELETE FROM appointments WHERE Appointment_ID = " + appointment.getID() + ";";
-
+                    appointmentType = a.getType();
                     Connection connection = JDBC.getConnection();
                     Statement statement = connection.createStatement();
                     statement.executeUpdate(query);
@@ -1416,7 +1439,7 @@ public class Controller {
                     break;
                 }
             }
-            appointmentErrorLabel.setText("Appointment successfully deleted.");
+            appointmentErrorLabel.setText("Appointment: " + appointment.getID() + " of type: " + appointmentType + " successfully deleted.");
             appointmentTable.refresh();
         } catch (Exception e) {
             appointmentErrorLabel.setText("Select an appointment to be deleted.");
@@ -1527,7 +1550,7 @@ public class Controller {
             statement.executeUpdate(query2);
 
             int divisionIDString = Integer.parseInt(divisionID);
-            Customer c = new Customer(nextCustomerID, customerName, customerAddress, customerPostalCode, customerPhoneNumber, nowLocal, createdBy, nowLocal, createdBy, divisionIDString);
+            Customer c = new Customer(nextCustomerID, customerName, customerAddress, customerPostalCode, customerPhoneNumber, nowLocal, createdBy, nowLocal, createdBy, divisionIDString, customerCountry);
 
             customers.add(c);
             customerTable.setItems(customers);
@@ -1566,18 +1589,44 @@ public class Controller {
 
             int countryIndex = countryComboBox.getSelectionModel().getSelectedIndex();
             int fldIndex = fldComboBox.getSelectionModel().getSelectedIndex();
+            String fldIndexString = fldComboBox.getSelectionModel().getSelectedItem();
             String customerCountry = comboBoxValues.get(countryIndex);
             String customerFLD = "";
 
-            //Set first-level-division based on fldIndex value.
+            //United States address format.
             if (customerCountry.equals("United States")) {
-                customerFLD = comboBoxValues2.get(fldIndex);
+                Pattern r = Pattern.compile("\\d+\\s\\w+\\s\\w+\\p{Punct}\\s\\w+\\s\\w+");
+                Matcher m = r.matcher(customerAddressText2.getText());
+
+                if (m.find()) {
+                    customerAddress = customerAddressText2.getText();
+                } else {
+                    throw new Exception();
+                }
             }
+
+            //United Kingdom address format.
             if (customerCountry.equals("United Kingdom")) {
-                customerFLD = comboBoxValues1.get(fldIndex);
+                Pattern r = Pattern.compile("\\d+\\s\\w+\\s\\w+\\p{Punct}\\s\\w+\\p{Punct}\\s\\w+");
+                Matcher m = r.matcher(customerAddressText2.getText());
+
+                if (m.find()) {
+                    customerAddress = customerAddressText2.getText();
+                } else {
+                    throw new Exception();
+                }
             }
+
+            //Canada address format.
             if (customerCountry.equals("Canada")) {
-                customerFLD = comboBoxValues0.get(fldIndex);
+                Pattern r = Pattern.compile("\\d+\\s\\w+\\s\\w+\\p{Punct}\\s\\w+");
+                Matcher m = r.matcher(customerAddressText2.getText());
+
+                if (m.find()) {
+                    customerAddress = customerAddressText2.getText();
+                } else {
+                    throw new Exception();
+                }
             }
 
             String query = "SELECT Division_ID, Division FROM first_level_divisions;";
@@ -1587,7 +1636,7 @@ public class Controller {
             try (ResultSet resultset = statement.executeQuery(query)) {
 
                 while (resultset.next()) {
-                    if (customerFLD.equals(resultset.getString(2))) {
+                    if (fldIndexString.equals(resultset.getString(2))) {
                         customerFLD = resultset.getString(1);
                         break;
                     }
@@ -1604,7 +1653,7 @@ public class Controller {
             ZonedDateTime utcZonedLocal2 = ZonedDateTime.ofInstant(utcZonedLocal.toInstant(), zoneId);
             String nowLocal = utcZonedLocal2.toLocalDate() + " " + utcZonedLocal2.toLocalTime();
 
-            String query2 = "UPDATE customers SET Customer_Name = '" + customerName + "', Address = '" + customerAddressText2.getText() + "', Postal_Code = '" + customerPostalCode + "', Phone = '" + customerPhoneNumber + "', Last_Update = '" + now + "', Division_ID = '" + customerFLD + "' WHERE Customer_ID = " + customerIDText2.getText() + ";";
+            String query2 = "UPDATE customers SET Customer_Name = '" + customerName + "', Address = '" + customerAddress + "', Postal_Code = '" + customerPostalCode + "', Phone = '" + customerPhoneNumber + "', Last_Update = '" + now + "', Division_ID = '" + customerFLD + "' WHERE Customer_ID = " + customerIDText2.getText() + ";";
             statement.executeUpdate(query2);
 
             for (Customer c : customers) {
@@ -1622,6 +1671,7 @@ public class Controller {
                     c.setLastUpdate(nowLocal);
                     c.setLastUpdatedBy(createdBy);
                     c.setDivisionID(Integer.parseInt(customerFLD));
+                    c.setCountry(customerCountry);
                     customers.add(c);
                     break;
                 }
@@ -1940,7 +1990,8 @@ public class Controller {
         double totalAppointmentHours = 0;
 
         while (rs.next()) {
-            if (rs.isLast()) {
+
+            if (rs.isFirst() && rs.isLast()) {
 
                 String startString = rs.getString("Start");
                 String[] stringArray = startString.split(" ");
@@ -1953,37 +2004,18 @@ public class Controller {
                 LocalTime endTime = LocalTime.parse(stringArray2[1]);
                 LocalDate endDate = LocalDate.parse(stringArray2[0]);
                 LocalDateTime endLocalDate = LocalDateTime.of(endDate, endTime);
-
-                totalAppointmentHours += Duration.between(startLocalDate, endLocalDate).toHours();
-                appointmentHoursString += totalAppointmentHours;
-                appointmentHours.add(appointmentHoursString);
-
-                prev = Integer.parseInt(rs.getString("Contact_ID"));
-                appointment.append(String.format("%-32.32s %-22.22s %-15.15s %-25.25s %-25.25s %-25.25s %-12.12s", rs.getString(1), rs.getString(2), rs.getString(5), rs.getString(3), rs.getString(6), rs.getString(7), rs.getString(12)));
-                contactAppointments.add(appointment.toString());
-                appointment = new StringBuilder();
-            } else if (prev == 0) {
-
-                String startString = rs.getString("Start");
-                String[] stringArray = startString.split(" ");
-                LocalTime startTime = LocalTime.parse(stringArray[1]);
-                LocalDate startDate = LocalDate.parse(stringArray[0]);
-                LocalDateTime startLocalDate = LocalDateTime.of(startDate, startTime);
-
-                String endString = rs.getString("End");
-                String[] stringArray2 = endString.split(" ");
-                LocalTime endTime = LocalTime.parse(stringArray2[1]);
-                LocalDate endDate = LocalDate.parse(stringArray2[0]);
-                LocalDateTime endLocalDate = LocalDateTime.of(endDate, endTime);
-
-                totalAppointmentHours += Duration.between(startLocalDate, endLocalDate).toHours();
 
                 prev = Integer.parseInt(rs.getString("Contact_ID"));
                 appointment.append(comboBoxValuesContacts.get(prev - 1)).append("\n\n").append(String.format("%-32.32s%-22.22s%-15.15s%-25.25s%-30.30s%-30.30s%-15.15s", rs.getString(1), rs.getString(2), rs.getString(5), rs.getString(3), rs.getString(6), rs.getString(7), rs.getString(12)));
-                appointmentHoursString = comboBoxValuesContacts.get(prev - 1) + ": ";
                 contactAppointments.add(appointment.toString());
                 appointment = new StringBuilder();
-            } else if (prev == Integer.parseInt(rs.getString("Contact_ID"))) {
+
+                appointmentHoursString = comboBoxValuesContacts.get(prev - 1) + ": ";
+                totalAppointmentHours += Duration.between(startLocalDate, endLocalDate).toHours();
+                appointmentHoursString += totalAppointmentHours;
+                appointmentHours.add(appointmentHoursString);
+
+            } else if (rs.isFirst()) {
 
                 String startString = rs.getString("Start");
                 String[] stringArray = startString.split(" ");
@@ -1999,15 +2031,65 @@ public class Controller {
 
                 totalAppointmentHours += Duration.between(startLocalDate, endLocalDate).toHours();
 
+                appointment = new StringBuilder("\n\t\t\t\t\t\t\t\t\tContact: ");
+                prev = Integer.parseInt(rs.getString("Contact_ID"));
+                appointment.append(comboBoxValuesContacts.get(prev - 1)).append("\n\n").append(String.format("%-32.32s%-22.22s%-15.15s%-25.25s%-30.30s%-30.30s%-15.15s", rs.getString(1), rs.getString(2), rs.getString(5), rs.getString(3), rs.getString(6), rs.getString(7), rs.getString(12)));
+                contactAppointments.add(appointment.toString());
+                appointment = new StringBuilder();
+
+                appointmentHoursString = comboBoxValuesContacts.get(prev - 1) + ": ";
+
+            } else if (rs.isLast()) {
+
+                String startString = rs.getString("Start");
+                String[] stringArray = startString.split(" ");
+                LocalTime startTime = LocalTime.parse(stringArray[1]);
+                LocalDate startDate = LocalDate.parse(stringArray[0]);
+                LocalDateTime startLocalDate = LocalDateTime.of(startDate, startTime);
+
+                String endString = rs.getString("End");
+                String[] stringArray2 = endString.split(" ");
+                LocalTime endTime = LocalTime.parse(stringArray2[1]);
+                LocalDate endDate = LocalDate.parse(stringArray2[0]);
+                LocalDateTime endLocalDate = LocalDateTime.of(endDate, endTime);
+
+                totalAppointmentHours += Duration.between(startLocalDate, endLocalDate).toHours();
+                appointmentHoursString += totalAppointmentHours;
+                appointmentHours.add(appointmentHoursString);
+                totalAppointmentHours = 0;
+
+                prev = Integer.parseInt(rs.getString("Contact_ID"));
                 appointment.append(String.format("%-32.32s%-22.22s%-15.15s%-25.25s%-30.30s%-30.30s%-15.15s", rs.getString(1), rs.getString(2), rs.getString(5), rs.getString(3), rs.getString(6), rs.getString(7), rs.getString(12)));
                 contactAppointments.add(appointment.toString());
                 appointment = new StringBuilder();
+
+            } else if (prev == Integer.parseInt(rs.getString("Contact_ID"))) {
+
+                // Add more to total hours
+
+                String startString = rs.getString("Start");
+                String[] stringArray = startString.split(" ");
+                LocalTime startTime = LocalTime.parse(stringArray[1]);
+                LocalDate startDate = LocalDate.parse(stringArray[0]);
+                LocalDateTime startLocalDate = LocalDateTime.of(startDate, startTime);
+
+                String endString = rs.getString("End");
+                String[] stringArray2 = endString.split(" ");
+                LocalTime endTime = LocalTime.parse(stringArray2[1]);
+                LocalDate endDate = LocalDate.parse(stringArray2[0]);
+                LocalDateTime endLocalDate = LocalDateTime.of(endDate, endTime);
+
+                totalAppointmentHours += Duration.between(startLocalDate, endLocalDate).toHours();
+
+                prev = Integer.parseInt(rs.getString("Contact_ID"));
+                appointment.append(String.format("%-32.32s%-22.22s%-15.15s%-25.25s%-30.30s%-30.30s%-15.15s", rs.getString(1), rs.getString(2), rs.getString(5), rs.getString(3), rs.getString(6), rs.getString(7), rs.getString(12)));
+                contactAppointments.add(appointment.toString());
+                appointment = new StringBuilder();
+
             } else {
 
-                //FIXME DO SOMETHING WITH TOTAL APPOINTMENT HOURS
                 appointmentHoursString += totalAppointmentHours;
                 appointmentHours.add(appointmentHoursString);
-
                 totalAppointmentHours = 0;
 
                 String startString = rs.getString("Start");
@@ -2030,9 +2112,9 @@ public class Controller {
                 appointmentHoursString = comboBoxValuesContacts.get(prev - 1) + ": ";
                 contactAppointments.add(appointment.toString());
                 appointment = new StringBuilder();
+
             }
         }
-
 
         reports = true;
         String fileName = "reports";
@@ -2062,7 +2144,7 @@ public class Controller {
      */
     @FXML
     private void switchToHome() throws IOException {
-        String fileName = "home";
+        String fileName = "dashboard";
         Main.loadHome(fileName);
     }
 
@@ -2199,5 +2281,15 @@ public class Controller {
     private void switchToUpcomingAppointment() throws IOException {
         String fileName = "upcomingAppointment";
         Main.loadUpcomingAppointment(fileName);
+    }
+
+    /**
+     * Switches to About GUI.
+     * @throws IOException if file is not found.
+     */
+    @FXML
+    private void switchToAbout() throws IOException {
+        String fileName = "about";
+        Main.loadAbout(fileName);
     }
 }

@@ -24,9 +24,9 @@ public class Main extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("dashboard.fxml")));
-        primaryStage.setTitle("Dashboard");
-        primaryStage.setScene(new Scene(root, 627, 328));
+        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("welcome.fxml")));
+        primaryStage.setTitle("Welcome");
+        primaryStage.setScene(new Scene(root, 684, 344));
         primaryStage.show();
     }
 
@@ -49,7 +49,7 @@ public class Main extends Application {
     public static void loadHome(String file) throws IOException {
         Stage stage = new Stage();
         Scene scene = new Scene(loadFXML(file), 880, 356);
-        stage.setTitle("Home");
+        stage.setTitle("Dashboard");
         stage.setScene(scene);
         stage.sizeToScene();
         stage.show();
@@ -158,6 +158,24 @@ public class Main extends Application {
         Stage stage = new Stage();
         Scene scene = new Scene(loadFXML(file), 880, 415);
         stage.setTitle("Reports");
+        stage.setScene(scene);
+        stage.sizeToScene();
+        stage.show();
+        stage.setMinWidth(stage.getWidth());
+        stage.setMinHeight(stage.getHeight());
+        stage.setMaxHeight(stage.getHeight());
+        stage.setMaxWidth(stage.getWidth());
+    }
+
+    /**
+     * Loads About GUI.
+     * @param file the FXML file to be loaded.
+     * @throws IOException if the file cannot be found.
+     */
+    public static void loadAbout(String file) throws IOException {
+        Stage stage = new Stage();
+        Scene scene = new Scene(loadFXML(file), 400, 393);
+        stage.setTitle("About");
         stage.setScene(scene);
         stage.sizeToScene();
         stage.show();
