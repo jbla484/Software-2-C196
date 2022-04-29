@@ -1044,16 +1044,16 @@ public class Controller {
                     }
                 }
 
+                if (!foundApp) {
+                    noAppointments = true;
+                }
+
                 errorDescription.setText("Successfully logged in.");
                 switchToHome();
 
                 if (foundApp) {
-
                     appointment = true;
                     switchToUpcomingAppointment();
-                } else {
-
-                    noAppointments = true;
                 }
 
                 stage.close();
@@ -1112,7 +1112,10 @@ public class Controller {
             ZonedDateTime utcZonedStartEst = ZonedDateTime.ofInstant(utcZonedStart.toInstant(), estId);
             LocalTime startTimeEst = utcZonedStartEst.toLocalTime();
 
-            if (startTimeEst.isBefore(LocalTime.of(8, 0)) || startTimeEst.isAfter(LocalTime.of(22, 0))) {
+            if (localStartTime.isBefore(LocalTime.of(7, 0)) || localStartTime.isAfter(LocalTime.of(21, 0))) {
+                throw new Exception();
+            }
+            if (localEndTime.isBefore(LocalTime.of(7, 0)) || localEndTime.isAfter(LocalTime.of(21, 0))) {
                 throw new Exception();
             }
 
@@ -1124,10 +1127,6 @@ public class Controller {
             String endDateAndTimeLocal = utcZonedEndLocal.toLocalDate() + " " + utcZonedEndLocal.toLocalTime();
             ZonedDateTime utcZonedEndEst = ZonedDateTime.ofInstant(utcZonedEnd.toInstant(), estId);
             LocalTime endTimeEst = utcZonedEndEst.toLocalTime();
-
-            if (endTimeEst.isBefore(LocalTime.of(8, 0)) || endTimeEst.isAfter(LocalTime.of(22, 0))) {
-                throw new Exception();
-            }
 
             String query = "SELECT Start, End FROM appointments WHERE Customer_ID = " + customerID + " AND Start LIKE '" + utcZonedStart.toLocalDate() + "%';";
 
@@ -1150,12 +1149,6 @@ public class Controller {
                 //appointment times and dates
                 LocalDateTime startLTD = LocalDateTime.of(utcZonedStart.toLocalDate(), utcZonedStart.toLocalTime());
                 LocalDateTime endLTD = LocalDateTime.of(utcZonedEnd.toLocalDate(), utcZonedEnd.toLocalTime());
-
-                //Both same start time in UTC
-                System.out.println("From database: " + startsDateAndTime);
-                System.out.println("From input via UTC time: " + startLTD);
-                System.out.println("From database: " + endsDateAndTime);
-                System.out.println("From input via UTC time: " + endLTD);
 
                 //see if appointment matches types value
                 if ((startLTD.isAfter(startsDateAndTime) && startLTD.isBefore(endsDateAndTime)) || (startLTD.isEqual(startsDateAndTime) || endLTD.isEqual(endsDateAndTime)) ||  (startLTD.isBefore(startsDateAndTime) && endLTD.isAfter(endsDateAndTime))) {
@@ -1234,7 +1227,7 @@ public class Controller {
             ZonedDateTime zdt = ZonedDateTime.of(ldt, zoneId);
             ZonedDateTime utcZonedLocal7 = ZonedDateTime.ofInstant(zdt.toInstant(), estId);
 
-            if (utcZonedLocal7.toLocalTime().isBefore(LocalTime.of(8, 0)) || utcZonedLocal7.toLocalTime().isAfter(LocalTime.of(22, 0))) {
+            if (zdt.toLocalTime().isBefore(LocalTime.of(7, 0)) || utcZonedLocal7.toLocalTime().isAfter(LocalTime.of(21, 0))) {
                 throw new Exception();
             }
 
@@ -1247,7 +1240,7 @@ public class Controller {
             zdt = ZonedDateTime.of(ldt, zoneId);
             utcZonedLocal7 = ZonedDateTime.ofInstant(zdt.toInstant(), estId);
 
-            if (utcZonedLocal7.toLocalTime().isBefore(LocalTime.of(8, 0)) || utcZonedLocal7.toLocalTime().isAfter(LocalTime.of(22, 0))) {
+            if (zdt.toLocalTime().isBefore(LocalTime.of(7, 0)) || zdt.toLocalTime().isAfter(LocalTime.of(21, 0))) {
                 throw new Exception();
             }
 
@@ -1273,7 +1266,7 @@ public class Controller {
 
             int contactID = contactComboBox.getSelectionModel().getSelectedIndex() + 1;
 
-            String query7 = "SELECT Start, End FROM Appointments WHERE Customer_ID = " + appointmentCustomerID + ";";
+            String query7 = "SELECT Start, End, Appointment_ID FROM appointments WHERE Customer_ID = " + appointmentCustomerID + " AND Start LIKE '" + utcZonedLocalStart.toLocalDate() + "%';";
 
             Connection connection = JDBC.getConnection();
             Statement statement = connection.createStatement();
@@ -1294,11 +1287,15 @@ public class Controller {
                 LocalDateTime endLTD = LocalDateTime.of(utcZonedLocalEnd.toLocalDate(), utcZonedLocalEnd.toLocalTime());
 
                 //see if appointment matches types value
-                if (startLTD.isAfter(endsDateAndTime)) {
+                if (appointmentIDText2.getText().equals(rs.getString(3))) {
+                    //Do nothing
                     System.out.println();
-                } else if (((startLTD.isAfter(startsDateAndTime) || startLTD.isEqual(startsDateAndTime)) && (endLTD.isBefore(endsDateAndTime) || endLTD.isEqual(endsDateAndTime) || endLTD.isAfter(endsDateAndTime))) || ((startLTD.isBefore(startsDateAndTime) && endLTD.isBefore(endsDateAndTime)) || (startLTD.isBefore(startsDateAndTime) && endLTD.isAfter(endsDateAndTime)))) {
+                } else if ((startLTD.isAfter(startsDateAndTime) && startLTD.isBefore(endsDateAndTime)) || (startLTD.isEqual(startsDateAndTime) || endLTD.isEqual(endsDateAndTime)) ||  (startLTD.isBefore(startsDateAndTime) && endLTD.isAfter(endsDateAndTime))) {
                     overlap = true;
                     throw new Exception();
+                } else if (startLTD.isAfter(endsDateAndTime) || (startLTD.isBefore(startsDateAndTime) && endLTD.isBefore(startsDateAndTime))) {
+                    //Do nothing
+                    System.out.println();
                 }
             }
 
@@ -1347,6 +1344,7 @@ public class Controller {
             stage.close();
         }
         catch (Exception e) {
+            addAppointmentErrorLabel.setText("Appointment must be between 8 am. and 10 pm EST.");
             if (overlap) {
                 addCustomerErrorLabel.setText("Cannot schedule overlapping appointments.");
                 overlap = false;
