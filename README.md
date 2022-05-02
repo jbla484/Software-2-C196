@@ -175,4 +175,6 @@ Your company acquires Country and First-Level-Division data from a third party t
 
 ## Evaluator Comments:
 
-"Waiting for evaluator comments..."
+"The submission adequately presents the Java application that has been developed to allow a user to manage customer and appointment records. All sections of the work are complete and meet standards."
+
+"The work is mechanically sound and free from major errors."
